@@ -167,7 +167,8 @@ w("```mermaid")
 w("graph LR")
 status_class = {"Yes": "yes", "Partial": "partial", "No": "no"}
 for n in order:
-    w(f'  E{n}["{n}<br/>{meta[n]["title"][:28]}"]')
+    tag = "EIP-8141 (root)" if n == ROOT else f"RSK: {RSK.get(n, ('?',))[0]}"
+    w(f'  E{n}["{n}<br/>{meta[n]["title"][:28]}<br/><i>{tag}</i>"]')
 seen = set()
 for p, c in edges:
     if (p, c) not in seen:
@@ -175,15 +176,18 @@ for p, c in edges:
         w(f"  E{p} --> E{c}")
 for n in SOFT:
     w(f"  E{ROOT} -.-> E{n}")
-w("  classDef yes fill:#cfe8cf,stroke:#2e7d32")
-w("  classDef partial fill:#fff3c4,stroke:#b58900")
-w("  classDef no fill:#f6d0d0,stroke:#c62828")
-w("  classDef other fill:#e6e6e6,stroke:#777")
+# Border-only styling: fill and text colours come from the viewer's theme, so the graph reads in light and dark mode.
+w("  classDef yes stroke:#2e9e44,stroke-width:3px")
+w("  classDef partial stroke:#d4a017,stroke-width:3px")
+w("  classDef no stroke:#d64545,stroke-width:3px")
+w("  classDef other stroke:#8a8a8a,stroke-width:2px,stroke-dasharray:4 3")
+w("  classDef root stroke:#3b82f6,stroke-width:4px")
+w(f"  class E{ROOT} root")
 for n in order:
     if n != ROOT:
         w(f"  class E{n} {status_class.get(RSK.get(n, ('?',))[0], 'other')}")
 w("```\n")
-w("Solid arrows = `requires`; dashed = cited in the body only. Green = on RSK, yellow = partial, red = missing, grey = N/A or unverified.\n")
+w("Solid arrows = `requires`; dashed = cited in the body only. Each box shows its Rootstock status; the border repeats it: green = on RSK, amber = partial, red = missing, grey dashed = N/A or unverified, blue = EIP-8141.\n")
 
 w("## What's missing on Rootstock\n")
 missing = [n for n in order if n != ROOT and RSK.get(n, ("?",))[0] in ("No", "Partial", "?")]

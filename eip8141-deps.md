@@ -59,40 +59,40 @@ Not expanded (`requires` of depth-3 nodes): none; the tree is complete.
 
 ```mermaid
 graph LR
-  E8141["8141<br/>Frame Transaction"]
-  E1559["1559<br/>Fee market change for ETH 1."]
-  E2718["2718<br/>Typed Transaction Envelope"]
-  E2780["2780<br/>Resource-Based Intrinsic Tra"]
-  E3529["3529<br/>Reduction in refunds"]
-  E3607["3607<br/>Reject transactions from sen"]
-  E4844["4844<br/>Shard Blob Transactions"]
-  E7594["7594<br/>PeerDAS - Peer Data Availabi"]
-  E7702["7702<br/>Set Code for EOAs"]
-  E7708["7708<br/>ETH Transfers Emit a Log"]
-  E7778["7778<br/>Block Gas Accounting without"]
-  E7825["7825<br/>Transaction Gas Limit Cap"]
-  E7976["7976<br/>Increase Calldata Floor Cost"]
-  E8037["8037<br/>State Creation Gas Cost Incr"]
-  E3651["3651<br/>Warm COINBASE"]
-  E7819["7819<br/>SETDELEGATE instruction"]
-  E7843["7843<br/>SLOTNUM Opcode"]
-  E7997["7997<br/>Deterministic Factory Contra"]
-  E2["2<br/>Homestead Hard-fork Changes"]
-  E161["161<br/>State trie clearing (invaria"]
-  E684["684<br/>Revert creation in case of c"]
-  E1052["1052<br/>EXTCODEHASH opcode"]
-  E2200["2200<br/>Structured Definitions for N"]
-  E2929["2929<br/>Gas cost increases for state"]
-  E2930["2930<br/>Optional access lists"]
-  E3541["3541<br/>Reject new contract code sta"]
-  E4788["4788<br/>Beacon block root in the EVM"]
-  E4895["4895<br/>Beacon chain push withdrawal"]
-  E6780["6780<br/>SELFDESTRUCT only in same tr"]
-  E7623["7623<br/>Increase calldata cost"]
-  E7928["7928<br/>Block-Level Access Lists"]
-  E8038["8038<br/>State-Access Gas Cost Update"]
-  E8246["8246<br/>Remove SELFDESTRUCT Burn"]
-  E2681["2681<br/>Limit account nonce to 2^64-"]
+  E8141["8141<br/>Frame Transaction<br/><i>EIP-8141 (root)</i>"]
+  E1559["1559<br/>Fee market change for ETH 1.<br/><i>RSK: Partial</i>"]
+  E2718["2718<br/>Typed Transaction Envelope<br/><i>RSK: No</i>"]
+  E2780["2780<br/>Resource-Based Intrinsic Tra<br/><i>RSK: No</i>"]
+  E3529["3529<br/>Reduction in refunds<br/><i>RSK: No</i>"]
+  E3607["3607<br/>Reject transactions from sen<br/><i>RSK: No</i>"]
+  E4844["4844<br/>Shard Blob Transactions<br/><i>RSK: No</i>"]
+  E7594["7594<br/>PeerDAS - Peer Data Availabi<br/><i>RSK: No</i>"]
+  E7702["7702<br/>Set Code for EOAs<br/><i>RSK: No</i>"]
+  E7708["7708<br/>ETH Transfers Emit a Log<br/><i>RSK: No</i>"]
+  E7778["7778<br/>Block Gas Accounting without<br/><i>RSK: No</i>"]
+  E7825["7825<br/>Transaction Gas Limit Cap<br/><i>RSK: No</i>"]
+  E7976["7976<br/>Increase Calldata Floor Cost<br/><i>RSK: No</i>"]
+  E8037["8037<br/>State Creation Gas Cost Incr<br/><i>RSK: No</i>"]
+  E3651["3651<br/>Warm COINBASE<br/><i>RSK: No</i>"]
+  E7819["7819<br/>SETDELEGATE instruction<br/><i>RSK: No</i>"]
+  E7843["7843<br/>SLOTNUM Opcode<br/><i>RSK: N/A?</i>"]
+  E7997["7997<br/>Deterministic Factory Contra<br/><i>RSK: ?</i>"]
+  E2["2<br/>Homestead Hard-fork Changes<br/><i>RSK: Yes</i>"]
+  E161["161<br/>State trie clearing (invaria<br/><i>RSK: No</i>"]
+  E684["684<br/>Revert creation in case of c<br/><i>RSK: Yes</i>"]
+  E1052["1052<br/>EXTCODEHASH opcode<br/><i>RSK: Yes</i>"]
+  E2200["2200<br/>Structured Definitions for N<br/><i>RSK: No</i>"]
+  E2929["2929<br/>Gas cost increases for state<br/><i>RSK: No</i>"]
+  E2930["2930<br/>Optional access lists<br/><i>RSK: No</i>"]
+  E3541["3541<br/>Reject new contract code sta<br/><i>RSK: Yes</i>"]
+  E4788["4788<br/>Beacon block root in the EVM<br/><i>RSK: N/A</i>"]
+  E4895["4895<br/>Beacon chain push withdrawal<br/><i>RSK: N/A</i>"]
+  E6780["6780<br/>SELFDESTRUCT only in same tr<br/><i>RSK: No</i>"]
+  E7623["7623<br/>Increase calldata cost<br/><i>RSK: No</i>"]
+  E7928["7928<br/>Block-Level Access Lists<br/><i>RSK: No</i>"]
+  E8038["8038<br/>State-Access Gas Cost Update<br/><i>RSK: No</i>"]
+  E8246["8246<br/>Remove SELFDESTRUCT Burn<br/><i>RSK: No</i>"]
+  E2681["2681<br/>Limit account nonce to 2^64-<br/><i>RSK: Partial</i>"]
   E8141 --> E1559
   E8141 --> E2718
   E8141 --> E2780
@@ -168,10 +168,12 @@ graph LR
   E8141 -.-> E7843
   E8141 -.-> E7997
   E8141 -.-> E8038
-  classDef yes fill:#cfe8cf,stroke:#2e7d32
-  classDef partial fill:#fff3c4,stroke:#b58900
-  classDef no fill:#f6d0d0,stroke:#c62828
-  classDef other fill:#e6e6e6,stroke:#777
+  classDef yes stroke:#2e9e44,stroke-width:3px
+  classDef partial stroke:#d4a017,stroke-width:3px
+  classDef no stroke:#d64545,stroke-width:3px
+  classDef other stroke:#8a8a8a,stroke-width:2px,stroke-dasharray:4 3
+  classDef root stroke:#3b82f6,stroke-width:4px
+  class E8141 root
   class E1559 partial
   class E2718 no
   class E2780 no
@@ -207,7 +209,7 @@ graph LR
   class E2681 partial
 ```
 
-Solid arrows = `requires`; dashed = cited in the body only. Green = on RSK, yellow = partial, red = missing, grey = N/A or unverified.
+Solid arrows = `requires`; dashed = cited in the body only. Each box shows its Rootstock status; the border repeats it: green = on RSK, amber = partial, red = missing, grey dashed = N/A or unverified, blue = EIP-8141.
 
 ## What's missing on Rootstock
 
