@@ -9,7 +9,7 @@ from pathlib import Path
 eips_dir = Path(sys.argv[1]) / "EIPS"
 out_path = Path(sys.argv[2])
 
-ROOT, MAX_DEPTH = 8141, 2
+ROOT, MAX_DEPTH = 8141, 3  # the tree closes at depth 3; depth 4+ adds nothing
 SOFT = [2, 2929, 3651, 6780, 7819, 7843, 7997, 8038]  # cited in the 8141 body, not in `requires`
 EIP_URL = "https://eips.ethereum.org/EIPS/eip-{}"
 
@@ -21,7 +21,7 @@ FORK = {
     2780: "Glamsterdam (scheduled)", 7708: "Glamsterdam (scheduled)", 7778: "Glamsterdam (scheduled)",
     7843: "Glamsterdam (scheduled)", 7928: "Glamsterdam (scheduled)", 7976: "Glamsterdam (scheduled)",
     7997: "Glamsterdam (scheduled)", 8037: "Glamsterdam (scheduled)", 8038: "Glamsterdam (scheduled)",
-    8246: "Glamsterdam (scheduled)", 7819: "—", 8141: "— (not in Glamsterdam meta EIP-7773)",
+    8246: "Glamsterdam (scheduled)", 7819: "—", 2681: "— (client rule, not fork-bound)", 8141: "— (not in Glamsterdam meta EIP-7773)",
 }
 
 # Rootstock status: (Yes / Partial / No / N/A / ?, evidence). Sources: rskj master 1e95a3b, RSKIPs a389ec2.
@@ -30,6 +30,7 @@ RSK = {
     2: ("Yes", "Low-s enforced: `Transaction.java:321` (`s < SECP256K1N_HALF`)."),
     161: ("No", "No touched-empty-account deletion seen in `TransactionExecutor.java` (light check; see `rsk-eip-status.md`)."),
     684: ("Yes", "`Program.java:547` `addressCollisionException`."),
+    2681: ("Partial", "Mempool only: `TxValidatorNonceEncodingValidator.java` rejects nonces over 8 bytes (≤ 2^64-1). No consensus rule or RSKIP; no overflow check on increment."),
     1052: ("Yes", "RSKIP-140 (Papyrus), fixed by RSKIP-169 (Iris)."),
     1559: ("Partial", "Only the BASEFEE opcode (EIP-3198 via RSKIP-412, Arrowhead); no fee market, no Type-2 tx. RSKIP-546 (Type 1/2 envelopes) is Draft."),
     2200: ("No", "Flat SSTORE costs in `GasCost.java`."),
@@ -110,7 +111,7 @@ for n in soft_only:
     depth[n] = 1
     meta[n] = preamble(n)
 
-# Requires of depth-2 nodes that we did not expand (depth 3 and beyond).
+# Requires of the deepest nodes that we did not expand (beyond MAX_DEPTH).
 beyond = sorted({c for n in hard if depth[n] == MAX_DEPTH for c in meta[n]["requires"] if c not in depth})
 
 
@@ -159,7 +160,7 @@ for n in order:
     assumed = f"**{a[0]}**: {a[1]}" if a else "same"
     w(f"| {depth[n]} | {link(n)} | {meta[n]['title']} | {kind(n)} | {st}{warn} | {FORK.get(n, '?')} | {by} | **{r}** | {ev} | {assumed} |")
 w("")
-w(f"Not expanded (depth 3, `requires` of depth-2 nodes): {', '.join(link(n) for n in beyond) or 'none'}.\n")
+w(f"Not expanded (`requires` of depth-{MAX_DEPTH} nodes): {', '.join(link(n) for n in beyond) or 'none; the tree is complete'}.\n")
 
 w("## Graph\n")
 w("```mermaid")
@@ -187,10 +188,10 @@ w("Solid arrows = `requires`; dashed = cited in the body only. Green = on RSK, y
 w("## What's missing on Rootstock\n")
 missing = [n for n in order if n != ROOT and RSK.get(n, ("?",))[0] in ("No", "Partial", "?")]
 hard1 = [n for n in missing if n in hard and depth[n] == 1]
-hard2 = [n for n in missing if n in hard and depth[n] == 2]
+hard2 = [n for n in missing if n in hard and depth[n] >= 2]
 softm = [n for n in missing if n not in hard]
 w(f"- **Direct requirements (depth 1), {len(hard1)}:** " + ", ".join(f"{link(n)} ({RSK[n][0]})" for n in hard1) + ".")
-w(f"- **Transitive (depth 2), {len(hard2)}:** " + ", ".join(f"{link(n)} ({RSK[n][0]})" for n in hard2) + ".")
+w(f"- **Transitive (depth 2–{MAX_DEPTH}), {len(hard2)}:** " + ", ".join(f"{link(n)} ({RSK[n][0]})" for n in hard2) + ".")
 w(f"- **Soft (cited only), {len(softm)}:** " + ", ".join(f"{link(n)} ({RSK[n][0]})" for n in softm) + ".")
 present = [n for n in order if n != ROOT and RSK.get(n, ("?",))[0] == "Yes"]
 w(f"- **Already on RSK:** " + ", ".join(link(n) for n in present) + ".\n")

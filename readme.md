@@ -5,6 +5,7 @@ Initial exploration to scope the work needed to implement frame transactions [EI
 ## Prepwork
 * Task 1: List all EIP dependencies of EIP-8141
     - let us do this iteratively, but limit the depth to two levels to start with
+    - extended to depth 3, where the tree closes: depth 4+ adds nothing (33 EIPs in total, including the ones 8141 only cites)
 * Task 2: Separately, list all EIPs that have been activated on Rootstock.
     - One way of doing this to first group EIPs by the ethereum hard forks in which they were activated
     - then, for each of these EIPs, we check if there are corresponding RSKIPs (activation height) or direct code implementation (e.g. commit)
