@@ -60,7 +60,7 @@ FORKS = [
     ("Amsterdam (Glamsterdam, scheduled)", 7773,
      [2780, 7688, 7708, 7732, 7778, 7843, 7928, 7954, 7976, 7981, 7997, 8024, 8037, 8038, 8045, 8061, 8246, 8282]),
 ]
-RETROACTIVE = [684, 3607, 7610]  # applied to all forks, not tied to one upgrade
+RETROACTIVE = [684, 2681, 3607, 7610]  # applied to all forks, not tied to one upgrade
 
 N_A = "N/A"
 BOMB = (N_A, "", "Ethereum difficulty-bomb schedule; Rootstock has no difficulty bomb.")
@@ -168,6 +168,10 @@ R = {
     8024: ("No", "", f"No RSKIP. Rootstock's old DUPN/SWAPN at 0xa8/0xa9 ({code('org/ethereum/vm/OpCode.java', 630)}) are disabled by {rskip(191, 'Iris')}."),
     # Retroactive
     684: ("Yes", "Genesis", f"`addressCollisionException` {code('org/ethereum/vm/program/Program.java', 547)}."),
+    2681: ("No", "", f"No consensus rule or RSKIP: nonces are `BigInteger` and block validation only checks equality "
+           f"({code('co/rsk/validators/BlockTxsValidationRule.java', 89)}); CREATE/CREATE2 has no nonce-cap check ({code('org/ethereum/vm/program/Program.java', 472)}). "
+           f"Only the tx pool ({code('co/rsk/net/handler/TxPendingValidator.java', 66)}) and block-building sort ({code('co/rsk/core/bc/PendingState.java', 194)}) "
+           "reject nonces over 8 bytes, which still allows 2^64-1 (the EIP forbids it)."),
     3607: ("No", "", f"rskj doesn't check sender code; {rskip(545)} notes this and doesn't need it.", "Not needed (RSKIP-545)"),
     7610: ("?", "", "Collision on non-empty storage: not checked."),
 }

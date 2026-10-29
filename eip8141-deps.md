@@ -51,7 +51,7 @@ Decided 2026-10-27 (see the notes under Observations). The `Under assumptions` c
 | 2 | [7928](https://eips.ethereum.org/EIPS/eip-7928) | Block-Level Access Lists | hard | Last Call ⚠ | Glamsterdam (scheduled) | 2780, 8037 | **No** | No RSKIP. | same |
 | 2 | [8038](https://eips.ethereum.org/EIPS/eip-8038) | State-Access Gas Cost Update | hard + cited | Last Call ⚠ | Glamsterdam (scheduled) | 2780, 8037 | **No** | No RSKIP. | **Replace**: Assumes 2929-style state-access pricing; replace with RSK 8141 gas rationale. |
 | 2 | [8246](https://eips.ethereum.org/EIPS/eip-8246) | Remove SELFDESTRUCT Burn | hard | Last Call ⚠ | Glamsterdam (scheduled) | 7708 | **No** | No RSKIP. | same |
-| 3 | [2681](https://eips.ethereum.org/EIPS/eip-2681) | Limit account nonce to 2^64-1 | hard | Final | — (client rule, not fork-bound) | 6780 | **Partial** | Mempool only: `TxValidatorNonceEncodingValidator.java` rejects nonces over 8 bytes (≤ 2^64-1). No consensus rule or RSKIP; no overflow check on increment. | same |
+| 3 | [2681](https://eips.ethereum.org/EIPS/eip-2681) | Limit account nonce to 2^64-1 | hard | Final | Retroactive (all forks) | 6780 | **No** | No consensus rule or RSKIP: nonces are `BigInteger` and block validation only checks equality (`BlockTxsValidationRule.java:89-91`); CREATE/CREATE2 has no nonce-cap check (`Program.java:472`). Only the tx pool (`TxPendingValidator.java:66`) and block-building sort (`PendingState.java:194`) reject nonces over 8 bytes, which still allows 2^64-1 (the EIP forbids it). | same |
 
 Not expanded (`requires` of depth-3 nodes): none; the tree is complete.
 
@@ -92,7 +92,7 @@ graph LR
   E7928["7928<br/>Block-Level Access Lists<br/><i>RSK: No</i>"]
   E8038["8038<br/>State-Access Gas Cost Update<br/><i>RSK: No</i>"]
   E8246["8246<br/>Remove SELFDESTRUCT Burn<br/><i>RSK: No</i>"]
-  E2681["2681<br/>Limit account nonce to 2^64-<br/><i>RSK: Partial</i>"]
+  E2681["2681<br/>Limit account nonce to 2^64-<br/><i>RSK: No</i>"]
   E8141 --> E1559
   E8141 --> E2718
   E8141 --> E2780
@@ -206,7 +206,7 @@ graph LR
   class E7928 no
   class E8038 no
   class E8246 no
-  class E2681 partial
+  class E2681 no
 ```
 
 Solid arrows = `requires`; dashed = cited in the body only. Each box shows its Rootstock status; the border repeats it: green = on RSK, amber = partial, red = missing, grey dashed = N/A or unverified, blue = EIP-8141.
@@ -214,7 +214,7 @@ Solid arrows = `requires`; dashed = cited in the body only. Each box shows its R
 ## What's missing on Rootstock
 
 - **Direct requirements (depth 1), 13:** [1559](https://eips.ethereum.org/EIPS/eip-1559) (Partial), [2718](https://eips.ethereum.org/EIPS/eip-2718) (No), [2780](https://eips.ethereum.org/EIPS/eip-2780) (No), [3529](https://eips.ethereum.org/EIPS/eip-3529) (No), [3607](https://eips.ethereum.org/EIPS/eip-3607) (No), [4844](https://eips.ethereum.org/EIPS/eip-4844) (No), [7594](https://eips.ethereum.org/EIPS/eip-7594) (No), [7702](https://eips.ethereum.org/EIPS/eip-7702) (No), [7708](https://eips.ethereum.org/EIPS/eip-7708) (No), [7778](https://eips.ethereum.org/EIPS/eip-7778) (No), [7825](https://eips.ethereum.org/EIPS/eip-7825) (No), [7976](https://eips.ethereum.org/EIPS/eip-7976) (No), [8037](https://eips.ethereum.org/EIPS/eip-8037) (No).
-- **Transitive (depth 2–3), 10:** [161](https://eips.ethereum.org/EIPS/eip-161) (Partial), [2200](https://eips.ethereum.org/EIPS/eip-2200) (No), [2929](https://eips.ethereum.org/EIPS/eip-2929) (No), [2930](https://eips.ethereum.org/EIPS/eip-2930) (No), [6780](https://eips.ethereum.org/EIPS/eip-6780) (No), [7623](https://eips.ethereum.org/EIPS/eip-7623) (No), [7928](https://eips.ethereum.org/EIPS/eip-7928) (No), [8038](https://eips.ethereum.org/EIPS/eip-8038) (No), [8246](https://eips.ethereum.org/EIPS/eip-8246) (No), [2681](https://eips.ethereum.org/EIPS/eip-2681) (Partial).
+- **Transitive (depth 2–3), 10:** [161](https://eips.ethereum.org/EIPS/eip-161) (Partial), [2200](https://eips.ethereum.org/EIPS/eip-2200) (No), [2929](https://eips.ethereum.org/EIPS/eip-2929) (No), [2930](https://eips.ethereum.org/EIPS/eip-2930) (No), [6780](https://eips.ethereum.org/EIPS/eip-6780) (No), [7623](https://eips.ethereum.org/EIPS/eip-7623) (No), [7928](https://eips.ethereum.org/EIPS/eip-7928) (No), [8038](https://eips.ethereum.org/EIPS/eip-8038) (No), [8246](https://eips.ethereum.org/EIPS/eip-8246) (No), [2681](https://eips.ethereum.org/EIPS/eip-2681) (No).
 - **Soft (cited only), 3:** [3651](https://eips.ethereum.org/EIPS/eip-3651) (No), [7819](https://eips.ethereum.org/EIPS/eip-7819) (No), [7997](https://eips.ethereum.org/EIPS/eip-7997) (?).
 - **Already on RSK:** [2](https://eips.ethereum.org/EIPS/eip-2), [684](https://eips.ethereum.org/EIPS/eip-684), [1052](https://eips.ethereum.org/EIPS/eip-1052), [3541](https://eips.ethereum.org/EIPS/eip-3541).
 
@@ -222,7 +222,7 @@ Solid arrows = `requires`; dashed = cited in the body only. Each box shows its R
 
 After applying the assumptions, **18** EIPs still need an RSK decision or an RSKIP, and **2** are unverified or need a substitute.
 
-- **Needs a decision or RSKIP:** [1559](https://eips.ethereum.org/EIPS/eip-1559) (Partial), [2780](https://eips.ethereum.org/EIPS/eip-2780) (No), [3529](https://eips.ethereum.org/EIPS/eip-3529) (No), [7708](https://eips.ethereum.org/EIPS/eip-7708) (No), [7778](https://eips.ethereum.org/EIPS/eip-7778) (No), [7825](https://eips.ethereum.org/EIPS/eip-7825) (No), [7976](https://eips.ethereum.org/EIPS/eip-7976) (No), [8037](https://eips.ethereum.org/EIPS/eip-8037) (No), [7819](https://eips.ethereum.org/EIPS/eip-7819) (No), [161](https://eips.ethereum.org/EIPS/eip-161) (Partial), [2200](https://eips.ethereum.org/EIPS/eip-2200) (No), [2930](https://eips.ethereum.org/EIPS/eip-2930) (Partial), [6780](https://eips.ethereum.org/EIPS/eip-6780) (No), [7623](https://eips.ethereum.org/EIPS/eip-7623) (No), [7928](https://eips.ethereum.org/EIPS/eip-7928) (No), [8038](https://eips.ethereum.org/EIPS/eip-8038) (Replace), [8246](https://eips.ethereum.org/EIPS/eip-8246) (No), [2681](https://eips.ethereum.org/EIPS/eip-2681) (Partial).
+- **Needs a decision or RSKIP:** [1559](https://eips.ethereum.org/EIPS/eip-1559) (Partial), [2780](https://eips.ethereum.org/EIPS/eip-2780) (No), [3529](https://eips.ethereum.org/EIPS/eip-3529) (No), [7708](https://eips.ethereum.org/EIPS/eip-7708) (No), [7778](https://eips.ethereum.org/EIPS/eip-7778) (No), [7825](https://eips.ethereum.org/EIPS/eip-7825) (No), [7976](https://eips.ethereum.org/EIPS/eip-7976) (No), [8037](https://eips.ethereum.org/EIPS/eip-8037) (No), [7819](https://eips.ethereum.org/EIPS/eip-7819) (No), [161](https://eips.ethereum.org/EIPS/eip-161) (Partial), [2200](https://eips.ethereum.org/EIPS/eip-2200) (No), [2930](https://eips.ethereum.org/EIPS/eip-2930) (Partial), [6780](https://eips.ethereum.org/EIPS/eip-6780) (No), [7623](https://eips.ethereum.org/EIPS/eip-7623) (No), [7928](https://eips.ethereum.org/EIPS/eip-7928) (No), [8038](https://eips.ethereum.org/EIPS/eip-8038) (Replace), [8246](https://eips.ethereum.org/EIPS/eip-8246) (No), [2681](https://eips.ethereum.org/EIPS/eip-2681) (No).
 - **Unverified or needs a substitute:** [7843](https://eips.ethereum.org/EIPS/eip-7843) (N/A?), [7997](https://eips.ethereum.org/EIPS/eip-7997) (?).
 
 ### Observations

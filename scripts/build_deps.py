@@ -21,7 +21,7 @@ FORK = {
     2780: "Glamsterdam (scheduled)", 7708: "Glamsterdam (scheduled)", 7778: "Glamsterdam (scheduled)",
     7843: "Glamsterdam (scheduled)", 7928: "Glamsterdam (scheduled)", 7976: "Glamsterdam (scheduled)",
     7997: "Glamsterdam (scheduled)", 8037: "Glamsterdam (scheduled)", 8038: "Glamsterdam (scheduled)",
-    8246: "Glamsterdam (scheduled)", 7819: "—", 2681: "— (client rule, not fork-bound)", 8141: "— (not in Glamsterdam meta EIP-7773)",
+    8246: "Glamsterdam (scheduled)", 7819: "—", 2681: "Retroactive (all forks)", 8141: "— (not in Glamsterdam meta EIP-7773)",
 }
 
 # Rootstock status: (Yes / Partial / No / N/A / ?, evidence). Sources: rskj master 1e95a3b, RSKIPs a389ec2.
@@ -30,7 +30,7 @@ RSK = {
     2: ("Yes", "Complete since Lovell. (1) 53000 gas for contract-creation txs and (2) low-s signatures (`Transaction.java:321`) from genesis; (3) failed code deposit leaves no empty contract: top-level creates from genesis (`TransactionExecutor` rollback), internal CREATE/CREATE2 only since RSKIP-453 (Lovell, block 7,338,024; `Program.java:738`). (4) Difficulty formula: N/A, RSK uses its own."),
     161: ("Partial", "Only rule (a), and only for CREATE/CREATE2: new contracts start at nonce 1 since RSKIP-125 (Wasabi; `Program.java:592`); contract-creation txs still start at 0 (`TransactionExecutor.java:403`). (b) 25000 new-account gas is charged even for zero value (`VM.java:1734`, `:1797`). (c) A zero-value transfer creates an empty account (`MutableRepository.java:322`). (d) No end-of-tx deletion of touched empty accounts; only SUICIDE deletions (`TransactionExecutor.java:622`)."),
     684: ("Yes", "`Program.java:547` `addressCollisionException`."),
-    2681: ("Partial", "Mempool only: `TxValidatorNonceEncodingValidator.java` rejects nonces over 8 bytes (≤ 2^64-1). No consensus rule or RSKIP; no overflow check on increment."),
+    2681: ("No", "No consensus rule or RSKIP: nonces are `BigInteger` and block validation only checks equality (`BlockTxsValidationRule.java:89-91`); CREATE/CREATE2 has no nonce-cap check (`Program.java:472`). Only the tx pool (`TxPendingValidator.java:66`) and block-building sort (`PendingState.java:194`) reject nonces over 8 bytes, which still allows 2^64-1 (the EIP forbids it)."),
     1052: ("Yes", "RSKIP-140 (Papyrus), fixed by RSKIP-169 (Iris)."),
     1559: ("Partial", "Only the BASEFEE opcode (EIP-3198 via RSKIP-412, Arrowhead); no fee market, no Type-2 tx. RSKIP-546 (Type 1/2 envelopes) is Draft."),
     2200: ("No", "Flat SSTORE costs in `GasCost.java`."),

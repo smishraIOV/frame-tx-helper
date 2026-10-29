@@ -25,10 +25,10 @@ Task 2 in `readme.md`: every Core EIP in each Ethereum hard fork, its Rootstock 
 | Prague (Pectra) | 10 |  |  |  | 5 | 5 |  |
 | Osaka (Fusaka) | 9 |  |  |  | 8 | 1 |  |
 | Amsterdam (Glamsterdam, scheduled) | 18 |  |  |  | 12 | 6 |  |
-| Retroactive | 3 | 1 |  |  | 1 |  | 1 |
-| **Total** | **92** | **27** | **3** | **1** | **36** | **24** | **1** |
+| Retroactive | 4 | 1 |  |  | 2 |  | 1 |
+| **Total** | **93** | **27** | **3** | **1** | **37** | **24** | **1** |
 
-Of the 68 EIPs that apply to Rootstock, 27 are fully active, 4 are partial or adapted, 36 are missing, and 1 still needs verifying. Rootstock tracks Ethereum's EVM opcode and precompile additions closely up to Cancun (except blobs), but skipped every gas-model change since Berlin (2929, 2930, 3529, 2200, 1884 repricing) and has no typed transactions.
+Of the 69 EIPs that apply to Rootstock, 27 are fully active, 4 are partial or adapted, 37 are missing, and 1 still needs verifying. Rootstock tracks Ethereum's EVM opcode and precompile additions closely up to Cancun (except blobs), but skipped every gas-model change since Berlin (2929, 2930, 3529, 2200, 1884 repricing) and has no typed transactions.
 
 ## Homestead
 
@@ -249,6 +249,7 @@ Rules Ethereum applies from genesis, not tied to one upgrade.
 | EIP | Title | RSK | RSK upgrade | Mainnet height | Evidence | Under assumptions |
 |---|---|---|---|---|---|---|
 | [684](https://eips.ethereum.org/EIPS/eip-684) | Revert creation in case of collision | **Yes** | Genesis | 0 | `addressCollisionException` [`Program.java:547`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/program/Program.java#L547). |  |
+| [2681](https://eips.ethereum.org/EIPS/eip-2681) | Limit account nonce to 2^64-1 | **No** |  |  | No consensus rule or RSKIP: nonces are `BigInteger` and block validation only checks equality ([`BlockTxsValidationRule.java:89`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/co/rsk/validators/BlockTxsValidationRule.java#L89)); CREATE/CREATE2 has no nonce-cap check ([`Program.java:472`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/program/Program.java#L472)). Only the tx pool ([`TxPendingValidator.java:66`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/co/rsk/net/handler/TxPendingValidator.java#L66)) and block-building sort ([`PendingState.java:194`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/co/rsk/core/bc/PendingState.java#L194)) reject nonces over 8 bytes, which still allows 2^64-1 (the EIP forbids it). |  |
 | [3607](https://eips.ethereum.org/EIPS/eip-3607) | Reject transactions from senders with deployed code | **No** |  |  | rskj doesn't check sender code; [RSKIP-545](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP545.md) notes this and doesn't need it. | Not needed (RSKIP-545) |
 | [7610](https://eips.ethereum.org/EIPS/eip-7610) | Revert creation in case of non-empty storage (Last Call) | **?** |  |  | Collision on non-empty storage: not checked. |  |
 
