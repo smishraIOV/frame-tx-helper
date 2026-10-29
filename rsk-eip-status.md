@@ -4,7 +4,7 @@ Task 2 in `readme.md`: every Core EIP in each Ethereum hard fork, its Rootstock 
 
 **RSK status:** **Yes** = fully active · **Partial** = some of it active (the evidence says which part) · **Adapted** = same goal, RSK-specific design · **No** = not active · **N/A** = doesn't apply to Rootstock (beacon chain, difficulty bomb, reverted) · **?** = not verified · **Partial (WIP)** = only covered by a Draft RSKIP that is work in progress; nothing active yet. Rows marked **Unverified** were taken on trust (a brief citation, not a rule-by-rule check) and show **?** until validated; the claimed status is kept in the evidence. The *Under assumptions* column applies the project assumptions in `readme.md` where they change the picture.
 
-**No RSKIP** means no RSKIP on any of the 95 branches of `rsksmart/RSKIPs` cites the EIP or its feature, and rskj `master` has no matching code (checked 2026-10-28, with a control search: EIP-3198 found in RSKIP-412).
+**No RSKIP** means no RSKIP on any of the 894 refs searched (all 263 branches and 631 pull-request heads of `rsksmart/RSKIPs` (HTTPS mirror clone)) cites the EIP or its feature, and rskj `master` has no matching code (checked 2026-10-28, with a control search: EIP-3198 found in RSKIP-412).
 
 ## Summary
 

@@ -24,7 +24,7 @@ def rskip_sources():
 
 def no_rskip_legend():
     s = SOURCES["no_rskip_search"]
-    return (f"**No RSKIP** means no RSKIP on any of the {s['refs']} branches of `rsksmart/RSKIPs` cites the EIP or its feature, "
+    return (f"**No RSKIP** means no RSKIP on any of the {s['refs']} refs searched ({s['scope']}) cites the EIP or its feature, "
             f"and rskj `master` has no matching code (checked {s['date']}, with a control search: {s['control']}).\n")
 
 RSKJ = SOURCES["rskj"]["commit"]

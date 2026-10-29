@@ -16,14 +16,35 @@
     "date": "2026-10-21"
   },
   "rskip_prs": [
-    {"pr": 701, "rskip": 701, "head": "658944d", "checked": "2026-10-28"},
-    {"pr": 708, "rskip": 543, "head": "0ba113d", "checked": "2026-10-27"},
-    {"pr": 709, "rskip": 546, "head": "a389ec2", "checked": "2026-10-27"},
-    {"pr": 710, "rskip": 545, "head": "4a8a1d9", "checked": "2026-10-28"}
+    {
+      "pr": 701,
+      "rskip": 701,
+      "head": "658944d",
+      "checked": "2026-10-28"
+    },
+    {
+      "pr": 708,
+      "rskip": 543,
+      "head": "0ba113d",
+      "checked": "2026-10-27"
+    },
+    {
+      "pr": 709,
+      "rskip": 546,
+      "head": "a389ec2",
+      "checked": "2026-10-27"
+    },
+    {
+      "pr": 710,
+      "rskip": 545,
+      "head": "4a8a1d9",
+      "checked": "2026-10-28"
+    }
   ],
   "no_rskip_search": {
     "date": "2026-10-28",
-    "refs": 95,
+    "refs": 894,
+    "scope": "all 263 branches and 631 pull-request heads of `rsksmart/RSKIPs` (HTTPS mirror clone)",
     "control": "EIP-3198 found in RSKIP-412"
   }
 }
