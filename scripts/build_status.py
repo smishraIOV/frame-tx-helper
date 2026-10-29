@@ -207,7 +207,9 @@ R = {
            f"reject nonces over 8 bytes, which still allows 2^64-1 (the EIP forbids it). Related: {rskip(545)} requires set-code authorization nonces < 2^64-1."),
     3607: ("No", "", f"No sender-code check in {code('org/ethereum/core/TransactionExecutor.java', 162, 'TransactionExecutor.init()')} "
            f"or the pool's {code('co/rsk/net/handler/txvalidator/TxValidatorAccountStateValidator.java')}; {rskip(545)} notes this and doesn't need it.", "Not needed (RSKIP-545)"),
-    7610: ("?", "", "Collision on non-empty storage: not checked."),
+    7610: ("No", "", f"No RSKIP. The CREATE/CREATE2 collision check tests code and nonce only, not storage "
+           f"({code('org/ethereum/vm/program/Program.java', 568)}); contract-creation txs have no collision check at all "
+           f"({code('org/ethereum/core/TransactionExecutor.java', 403)}; see 684)."),
 }
 for n in (2780, 7708, 7778, 7928, 7954, 7976, 7981, 7997, 8037, 8038, 8246):
     R.setdefault(n, ("No", "", "No RSKIP."))
