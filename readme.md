@@ -22,10 +22,14 @@ Working assumptions for scoping. The per-EIP effect is in the "Under assumptions
 ## Files
 * `eip8141-deps.md`: EIP-8141 dependency tree and Rootstock status (Task 1)
 * `rsk-eip-status.md`: Ethereum Core EIPs by hard fork vs Rootstock, with RSKIP, upgrade, height and evidence (Task 2)
-* `scripts/`: generators for the two files above. They need a shallow clone of `ethereum/EIPs`:
-    - `python3.15 -I scripts/build_deps.py <EIPs> eip8141-deps.md`
-    - `python3.15 -I scripts/build_status.py <EIPs> rsk-eip-status.md`
-    - `build_deps.py` overwrites the whole file, including the review notes under Observations. Those notes are hard-coded in the script, so add any new note to the script too, or edit the generated file by hand.
+* `notes/eip8141.md`: the Observations section of `eip8141-deps.md`, including review notes. Edit notes here, not in the generated file.
+* `sources.json`: the pinned sources both files cite (rskj commit, RSKIPs commit and PR heads, EIPs fetch date). Update it when re-pinning.
+* `scripts/`: the two files above are generated; edit the generators, not the `.md` files. They need a shallow clone of `ethereum/EIPs` and a sibling `../rskj` clone.
+    - `scripts/regen.sh <EIPs>`: regenerates both files and checks every citation. It refuses to run if the generated Observations were edited by hand (move the edits into `notes/eip8141.md`). Set `PYTHON` to choose the interpreter (default `python3.15`).
+    - `build_deps.py`, `build_status.py`: the generators.
+    - `check_citations.py`: reads every cited rskj file at the pinned commit and prints the enclosing method and line; flags wrong commits, missing files and out-of-range lines.
+    - `check_sources.py`: reports whether anything in `sources.json` has moved upstream (GitHub API).
+    - `set_entries.py`: replaces whole status entries in a generator from a small edits file.
 
 ## Next steps
 1. Validate the findings from Task 2 in rsk-eip-status.md

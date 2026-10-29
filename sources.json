@@ -1,0 +1,29 @@
+{
+  "ethereum_eips": {
+    "repo": "ethereum/EIPs",
+    "fetched": "2026-10-27"
+  },
+  "rskj": {
+    "repo": "rsksmart/rskj",
+    "branch": "master",
+    "commit": "1e95a3b03",
+    "date": "2026-10-16"
+  },
+  "rskips": {
+    "repo": "rsksmart/RSKIPs",
+    "note": "Local checkout used for RSKIP statuses; this commit is the head of the RSKIP-546 PR branch (AR-32), which carries master plus that PR.",
+    "commit": "a389ec2",
+    "date": "2026-10-21"
+  },
+  "rskip_prs": [
+    {"pr": 701, "rskip": 701, "head": "658944d", "checked": "2026-10-28"},
+    {"pr": 708, "rskip": 543, "head": "0ba113d", "checked": "2026-10-27"},
+    {"pr": 709, "rskip": 546, "head": "a389ec2", "checked": "2026-10-27"},
+    {"pr": 710, "rskip": 545, "head": "4a8a1d9", "checked": "2026-10-28"}
+  ],
+  "no_rskip_search": {
+    "date": "2026-10-28",
+    "refs": 95,
+    "control": "EIP-3198 found in RSKIP-412"
+  }
+}

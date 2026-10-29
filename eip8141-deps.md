@@ -2,11 +2,11 @@
 
 EIP-8141 is **Draft** (created 2026-01-29). This is Task 1 in `readme.md`: `requires:` walked to depth 3, plus the EIPs that are only cited in the 8141 body ("soft", not expanded).
 
-Sources: `ethereum/EIPs` (fetched 2026-10-27) for preambles and the hardfork metas (7600 Pectra, 7607 Fusaka, 7773 Glamsterdam); `rsksmart/rskj` master `1e95a3b` and `rsksmart/RSKIPs` `a389ec2`, plus open PR heads as of 2026-10-28 (#701 RSKIP-701 `658944d`, #708 RSKIP-543, #709 RSKIP-546, #710 RSKIP-545 `4a8a1d9`) for Rootstock status. See `rsk-eip-status.md` for the wider evidence.
+Sources: `ethereum/EIPs` (fetched 2026-10-27) for preambles and the hardfork metas (7600 Pectra, 7607 Fusaka, 7773 Glamsterdam); `rsksmart/rskj` master `1e95a3b03` and `rsksmart/RSKIPs` `a389ec2` (2026-10-21; head of the RSKIP-546 PR branch, which carries master), plus open PR heads #701 RSKIP-701 `658944d` (2026-10-28), #708 RSKIP-543 `0ba113d` (2026-10-27), #709 RSKIP-546 `a389ec2` (2026-10-27), #710 RSKIP-545 `4a8a1d9` (2026-10-28) for Rootstock status. See `rsk-eip-status.md` for the wider evidence.
 
 Legend: **hard** = reached through `requires`; **soft** = only cited in the 8141 body; **hard + cited** = both. RSK: Yes / Partial / No / N/A / ? (not verified); **Partial (WIP)** = only covered by a Draft RSKIP that is work in progress; nothing active yet. Rows marked **Unverified** were taken on trust (a brief citation, not a rule-by-rule check) and show **?** until validated; the claimed status is kept in the evidence. ⚠ = not Final yet, so the spec can still change.
 
-**No RSKIP** means no RSKIP on any of the 95 branches of `rsksmart/RSKIPs` cites the EIP or its feature, and rskj `master` has no matching code (checked 2026-10-28, with a control search that does find EIP-3198 in RSKIP-412).
+**No RSKIP** means no RSKIP on any of the 95 branches of `rsksmart/RSKIPs` cites the EIP or its feature, and rskj `master` has no matching code (checked 2026-10-28, with a control search: EIP-3198 found in RSKIP-412).
 
 ## Project assumptions
 

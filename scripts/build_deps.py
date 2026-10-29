@@ -2,12 +2,32 @@
 
 Usage: python3.15 -I build_deps.py <EIPs-repo> <out.md>
 """
+import json
 import re
 import sys
 from pathlib import Path
 
 eips_dir = Path(sys.argv[1]) / "EIPS"
 out_path = Path(sys.argv[2])
+
+REPO = Path(__file__).resolve().parent.parent
+SOURCES = json.loads((REPO / "sources.json").read_text(encoding="utf-8"))
+
+
+def rskip_sources():
+    """One sentence naming the pinned RSKIPs checkout and PR heads (from sources.json)."""
+    r = SOURCES["rskips"]
+    prs = ", ".join(f"#{p['pr']} RSKIP-{p['rskip']} `{p['head']}` ({p['checked']})" for p in SOURCES["rskip_prs"])
+    return f"`{r['repo']}` `{r['commit']}` ({r['date']}; head of the RSKIP-546 PR branch, which carries master), plus open PR heads {prs}"
+
+
+def no_rskip_legend():
+    s = SOURCES["no_rskip_search"]
+    return (f"**No RSKIP** means no RSKIP on any of the {s['refs']} branches of `rsksmart/RSKIPs` cites the EIP or its feature, "
+            f"and rskj `master` has no matching code (checked {s['date']}, with a control search: {s['control']}).\n")
+
+# Review notes (including the user's @claude notes) live in their own file and are included verbatim.
+NOTES = REPO / "notes" / "eip8141.md"
 
 ROOT, MAX_DEPTH = 8141, 3  # the tree closes at depth 3; depth 4+ adds nothing
 SOFT = [2, 2929, 3651, 6780, 7819, 7843, 7997, 8038]  # cited in the 8141 body, not in `requires`
@@ -24,7 +44,7 @@ FORK = {
     8246: "Glamsterdam (scheduled)", 7819: "—", 2681: "Retroactive (all forks)", 8141: "— (not in Glamsterdam meta EIP-7773)",
 }
 
-# Rootstock status: (Yes / Partial / No / N/A / ?, evidence). Sources: rskj master 1e95a3b, RSKIPs a389ec2.
+# Rootstock status: (Yes / Partial / No / N/A / ?, evidence). Sources: see sources.json.
 RSK = {
     8141: ("No", "No RSKIP."),
     2: ("Yes", "Complete since Lovell. (1) 53000 gas for contract-creation txs and (2) low-s signatures (`Transaction.java:321`) from genesis; (3) failed code deposit leaves no empty contract: top-level creates from genesis (`TransactionExecutor` rollback), internal CREATE/CREATE2 only since RSKIP-453 (Lovell, block 7,338,024; `Program.java:738`). (4) Difficulty formula: N/A, RSK uses its own."),
@@ -135,11 +155,12 @@ w = out.append
 w("# EIP-8141 (Frame Transaction): dependency tree and Rootstock status\n")
 w(f"EIP-8141 is **{meta[ROOT]['status']}** (created {meta[ROOT].get('created')}). This is Task 1 in `readme.md`: `requires:` walked to depth {MAX_DEPTH}, "
   "plus the EIPs that are only cited in the 8141 body (\"soft\", not expanded).\n")
-w("Sources: `ethereum/EIPs` (fetched 2026-10-27) for preambles and the hardfork metas (7600 Pectra, 7607 Fusaka, 7773 Glamsterdam); "
-  "`rsksmart/rskj` master `1e95a3b` and `rsksmart/RSKIPs` `a389ec2`, plus open PR heads as of 2026-10-28 (#701 RSKIP-701 `658944d`, #708 RSKIP-543, #709 RSKIP-546, #710 RSKIP-545 `4a8a1d9`) for Rootstock status. See `rsk-eip-status.md` for the wider evidence.\n")
+w(f"Sources: `{SOURCES['ethereum_eips']['repo']}` (fetched {SOURCES['ethereum_eips']['fetched']}) for preambles and the hardfork metas (7600 Pectra, 7607 Fusaka, 7773 Glamsterdam); "
+  f"`{SOURCES['rskj']['repo']}` {SOURCES['rskj']['branch']} `{SOURCES['rskj']['commit']}` and {rskip_sources()} for Rootstock status. "
+  "See `rsk-eip-status.md` for the wider evidence.\n")
 w("Legend: **hard** = reached through `requires`; **soft** = only cited in the 8141 body; **hard + cited** = both. "
   "RSK: Yes / Partial / No / N/A / ? (not verified); **Partial (WIP)** = only covered by a Draft RSKIP that is work in progress; nothing active yet. Rows marked **Unverified** were taken on trust (a brief citation, not a rule-by-rule check) and show **?** until validated; the claimed status is kept in the evidence. ⚠ = not Final yet, so the spec can still change.\n")
-w("**No RSKIP** means no RSKIP on any of the 95 branches of `rsksmart/RSKIPs` cites the EIP or its feature, and rskj `master` has no matching code (checked 2026-10-28, with a control search that does find EIP-3198 in RSKIP-412).\n")
+w(no_rskip_legend())
 
 w("## Project assumptions\n")
 w("Decided 2026-10-27 (see the notes under Observations). The `Under assumptions` column below applies them; the `RSK` column stays as today's mainnet state.\n")
@@ -221,23 +242,7 @@ if unk:
 w("")
 
 w("### Observations\n")
-w("- **Rootstock has no typed transactions at all.** No 2718 handling in rskj master, and none of RSKIP-543/545/546 is in `ConsensusRule.java`. EIP-2718 is the base of the tree: 1559, 2930, 4844, 7702 and 8141 itself all depend on it. RSKIP-543/545/546 (envelope, 7702, Type 1/2) exist but are Draft, so they're the natural first step.")
-w("  * @claude: For this project, assume that RSKIP-543, 545, and 546 will be activated. ")
-w("  * For the present, the lates versions of these RSKIPS live as PRs 708, 709, and 710 ")
-w("  * → Applied as assumption 1 (PR #708 = RSKIP-543, #709 = RSKIP-546, #710 = RSKIP-545). "
-  "RSKIP-546 gives 1559 and 2930 their encodings only: base fee is effectively zero, and the access list is charged for bandwidth but doesn't affect execution.")
-w("- **Gas-model conflicts.** 2929, 2930, 3529 and 3651, plus the newer 2780, 7778, 8037 and 8038, all assume Ethereum's access-list, refund and state-gas model. Rootstock does not adopt 2929 (project decision). Each of these needs an explicit RSK decision: adopt, adapt, or define 8141 gas without it.")
-w("  * @claude: For this project, treat all storage rent related RSKIPs as rejected. ")
-w("  * @claude: for the present, assume that gas price difference from eip-2929 will not be implemented on Rootstock. We will define 8141 gas without it - with our own rationale.")
-w("  * → Applied as assumptions 2 and 3. 2929 and 3651 become Won't, and 8038 becomes Replace. "
-  "Still open: 3529 (refund reduction), 2200, and the newer gas EIPs 2780, 7778, 7623, 7976 and 8037. These are 2929-independent and need individual decisions as part of the RSK 8141 gas rationale. "
-  "EIP-161 (required by 7702 and 8037) is only partly active: new contracts start at nonce 1, but none of the empty-account rules apply, so zero-value calls still create accounts. That matters for 8037's state-creation charging, and it needs a decision like the gas EIPs above.")
-w("- **Blob dependencies.** 4844 and 7594 are in `requires` mainly for BLOBHASH and the blob-wrapper format. Rootstock has no blobs (RSKIP-558 is Draft). We need to establish whether 8141 can work on RSK without them, for example with zero blobs per frame tx.")
-w("  * @claude: blobs are not critical to frame transactions. For this project we can assume that if needed, eip-4844 can be activated on Rootstock (RSKIP-558)")
-w("  * → Applied as assumption 4: 4844 is If needed, 7594 is Not needed.")
-w("- **Beacon-chain items (4788, 4895, 7843 SLOTNUM)** are N/A: Rootstock is merge-mined PoW with no beacon chain or slots, so they're out of scope.")
-w("- **Moving targets.** 8141 is Draft, and 2780, 7708, 7778, 7843, 7928, 7976, 7997, 8037, 8038 and 8246 are Last Call. Most are scheduled for Glamsterdam, so their specs may still change. SELFDESTRUCT is moving on both sides: RSKIP-701 on Rootstock and EIP-4758 on Ethereum (see 6780).")
-w("- **Verification:** every row is now checked. Resolved along the way: 7997 (No RSKIP), 7843 (N/A, out of scope), 3607 (not adopted, not needed per RSKIP-545), 161 (Partial: nonce rule only, checked rule by rule), and 2200, 2929, 3529 and 3651 (checked against code).")
+w(NOTES.read_text(encoding="utf-8").rstrip("\n"))
 
 out_path.write_text("\n".join(out) + "\n", encoding="utf-8")
 print("hard:", sorted(hard))

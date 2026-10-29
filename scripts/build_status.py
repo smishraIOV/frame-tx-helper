@@ -2,6 +2,7 @@
 
 Usage: python3.15 -I scripts/build_status.py <EIPs-repo> rsk-eip-status.md
 """
+import json
 import re
 import sys
 from collections import Counter
@@ -10,7 +11,23 @@ from pathlib import Path
 eips_dir = Path(sys.argv[1]) / "EIPS"
 out_path = Path(sys.argv[2])
 
-RSKJ = "1e95a3b03"  # rsksmart/rskj origin/master, 2026-10-16
+REPO = Path(__file__).resolve().parent.parent
+SOURCES = json.loads((REPO / "sources.json").read_text(encoding="utf-8"))
+
+
+def rskip_sources():
+    """One sentence naming the pinned RSKIPs checkout and PR heads (from sources.json)."""
+    r = SOURCES["rskips"]
+    prs = ", ".join(f"#{p['pr']} RSKIP-{p['rskip']} `{p['head']}` ({p['checked']})" for p in SOURCES["rskip_prs"])
+    return f"`{r['repo']}` `{r['commit']}` ({r['date']}; head of the RSKIP-546 PR branch, which carries master), plus open PR heads {prs}"
+
+
+def no_rskip_legend():
+    s = SOURCES["no_rskip_search"]
+    return (f"**No RSKIP** means no RSKIP on any of the {s['refs']} branches of `rsksmart/RSKIPs` cites the EIP or its feature, "
+            f"and rskj `master` has no matching code (checked {s['date']}, with a control search: {s['control']}).\n")
+
+RSKJ = SOURCES["rskj"]["commit"]
 EIP_URL = "https://eips.ethereum.org/EIPS/eip-{}"
 RSKIP_URL = "https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP{:02d}.md"
 PR_URL = "https://github.com/rsksmart/RSKIPs/pull/{}"
@@ -253,12 +270,13 @@ w = out.append
 w("# Ethereum EIPs by hard fork vs Rootstock\n")
 w("Task 2 in `readme.md`: every Core EIP in each Ethereum hard fork, its Rootstock status, the RSK network upgrade and mainnet "
   "activation height, and the evidence. Code links point at "
-  f"[`rsksmart/rskj@{RSKJ}`](https://github.com/rsksmart/rskj/tree/{RSKJ}) (origin/master, 2026-10-16). RSKIP statuses come from `rsksmart/RSKIPs` `a389ec2`, plus open PR heads as of 2026-10-28 (#701 RSKIP-701 `658944d`, #708 RSKIP-543, #709 RSKIP-546, #710 RSKIP-545 `4a8a1d9`); "
+  f"[`rsksmart/rskj@{RSKJ}`](https://github.com/rsksmart/rskj/tree/{RSKJ}) ({SOURCES['rskj']['branch']}, {SOURCES['rskj']['date']}). "
+  f"RSKIP statuses come from {rskip_sources()}; "
   "fork lists come from the hardfork meta EIPs, linked per section.\n")
 w("**RSK status:** **Yes** = fully active · **Partial** = some of it active (the evidence says which part) · **Adapted** = same goal, RSK-specific design · "
   "**No** = not active · **N/A** = doesn't apply to Rootstock (beacon chain, difficulty bomb, reverted) · **?** = not verified · **Partial (WIP)** = only covered by a Draft RSKIP that is work in progress; nothing active yet. Rows marked **Unverified** were taken on trust (a brief citation, not a rule-by-rule check) and show **?** until validated; the claimed status is kept in the evidence. "
   "The *Under assumptions* column applies the project assumptions in `readme.md` where they change the picture.\n")
-w("**No RSKIP** means no RSKIP on any of the 95 branches of `rsksmart/RSKIPs` cites the EIP or its feature, and rskj `master` has no matching code (checked 2026-10-28, with a control search that does find EIP-3198 in RSKIP-412).\n")
+w(no_rskip_legend())
 
 # Summary
 counts = Counter()
