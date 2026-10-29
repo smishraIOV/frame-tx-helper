@@ -27,7 +27,7 @@ FORK = {
 # Rootstock status: (Yes / Partial / No / N/A / ?, evidence). Sources: rskj master 1e95a3b, RSKIPs a389ec2.
 RSK = {
     8141: ("No", "No RSKIP."),
-    2: ("Yes", "Low-s enforced: `Transaction.java:321` (`s < SECP256K1N_HALF`)."),
+    2: ("Yes", "Complete since Lovell. (1) 53000 gas for contract-creation txs and (2) low-s signatures (`Transaction.java:321`) from genesis; (3) failed code deposit leaves no empty contract: top-level creates from genesis (`TransactionExecutor` rollback), internal CREATE/CREATE2 only since RSKIP-453 (Lovell, block 7,338,024; `Program.java:738`). (4) Difficulty formula: N/A, RSK uses its own."),
     161: ("No", "No touched-empty-account deletion seen in `TransactionExecutor.java` (light check; see `rsk-eip-status.md`)."),
     684: ("Yes", "`Program.java:547` `addressCollisionException`."),
     2681: ("Partial", "Mempool only: `TxValidatorNonceEncodingValidator.java` rejects nonces over 8 bytes (≤ 2^64-1). No consensus rule or RSKIP; no overflow check on increment."),

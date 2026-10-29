@@ -71,7 +71,11 @@ BLOBS = ("No", "", "Blob-specific; Rootstock has no blobs ([RSKIP-558](" + RSKIP
 # status: Yes | Partial | Adapted | No | Won't | N/A | ?
 R = {
     # Homestead
-    2: ("Yes", "Genesis", f"Low-s rule {code('org/ethereum/core/Transaction.java', 321)}; contract-creation tx cost 53000 {code('org/ethereum/vm/GasCost.java', 84)}."),
+    2: ("Yes", "Lovell", f"Complete since Lovell. From genesis: (1) contract-creation tx cost 53000 {code('org/ethereum/vm/GasCost.java', 84)}; "
+        f"(2) low-s rule {code('org/ethereum/core/Transaction.java', 321)}; (3) top-level creates roll back on failed code deposit "
+        f"{code('org/ethereum/core/TransactionExecutor.java', 471)}. Internal CREATE/CREATE2 left an empty account until "
+        f"{rskip(453, 'Lovell')} ({code('org/ethereum/vm/program/Program.java', 738)}, {code('org/ethereum/vm/program/Program.java', 756)}). "
+        "(4) Difficulty formula: N/A, RSK uses its own."),
     7: ("Yes", "Genesis", f"DELEGATECALL {code('org/ethereum/vm/OpCode.java', 669)}; value handling fixed by {rskip(103, 'Orchid 0.6.0')}."),
     # Tangerine Whistle
     150: ("Yes", "Genesis", f"EIP-150 costs in {code('org/ethereum/vm/GasCost.java')} (BALANCE 400, SLOAD 200, EXTCODESIZE 700); `getCallStackDepth` added by {rskip(203, 'Arrowhead')}."),

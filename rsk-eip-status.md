@@ -36,7 +36,7 @@ Meta: [EIP-606](https://eips.ethereum.org/EIPS/eip-606).
 
 | EIP | Title | RSK | RSK upgrade | Mainnet height | Evidence | Under assumptions |
 |---|---|---|---|---|---|---|
-| [2](https://eips.ethereum.org/EIPS/eip-2) | Homestead Hard-fork Changes | **Yes** | Genesis | 0 | Low-s rule [`Transaction.java:321`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/core/Transaction.java#L321); contract-creation tx cost 53000 [`GasCost.java:84`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/GasCost.java#L84). |  |
+| [2](https://eips.ethereum.org/EIPS/eip-2) | Homestead Hard-fork Changes | **Yes** | Lovell | 7,338,024 | Complete since Lovell. From genesis: (1) contract-creation tx cost 53000 [`GasCost.java:84`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/GasCost.java#L84); (2) low-s rule [`Transaction.java:321`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/core/Transaction.java#L321); (3) top-level creates roll back on failed code deposit [`TransactionExecutor.java:471`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/core/TransactionExecutor.java#L471). Internal CREATE/CREATE2 left an empty account until [RSKIP-453](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP453.md) (Lovell) ([`Program.java:738`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/program/Program.java#L738), [`Program.java:756`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/program/Program.java#L756)). (4) Difficulty formula: N/A, RSK uses its own. |  |
 | [7](https://eips.ethereum.org/EIPS/eip-7) | DELEGATECALL | **Yes** | Genesis | 0 | DELEGATECALL [`OpCode.java:669`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/OpCode.java#L669); value handling fixed by [RSKIP-103](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP103.md) (Orchid 0.6.0). |  |
 
 ## Tangerine Whistle
@@ -267,12 +267,12 @@ Not part of an Ethereum hard fork, listed so the RSKIP → EIP mapping is comple
 
 | RSK upgrade | Mainnet height | EIPs |
 |---|---|---|
-| Genesis | 0 | 2, 7, 100, 140, 150, 155, 160, 170, 198, 211, 658, 684 |
+| Genesis | 0 | 7, 100, 140, 150, 155, 160, 170, 198, 211, 658, 684 |
 | Orchid | 729,000 | 214 |
 | Wasabi | 1,591,000 | 145, 1014 |
 | Papyrus | 2,392,700 | 196, 197, 1052, 1108, 1344, 1884 |
 | Iris | 3,614,800 | 152 |
 | Arrowhead | 6,223,700 | 1559, 2028, 3198, 3855 |
-| Lovell | 7,338,024 | 1153, 3860, 5656 |
+| Lovell | 7,338,024 | 2, 1153, 3860, 5656 |
 | Vetiver | 8,804,200 | 3541 |
 
