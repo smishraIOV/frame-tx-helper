@@ -6,6 +6,8 @@ Sources: `ethereum/EIPs` (fetched 2026-10-27) for preambles and the hardfork met
 
 Legend: **hard** = reached through `requires`; **soft** = only cited in the 8141 body; **hard + cited** = both. RSK: Yes / Partial / No / N/A / ? (not verified). ⚠ = not Final yet, so the spec can still change.
 
+**No RSKIP** means no RSKIP on any of the 95 branches of `rsksmart/RSKIPs` cites the EIP or its feature, and rskj `master` has no matching code (checked 2026-10-28, with a control search that does find EIP-3198 in RSKIP-412).
+
 ## Project assumptions
 
 Decided 2026-10-27 (see the notes under Observations). The `Under assumptions` column below applies them; the `RSK` column stays as today's mainnet state.
