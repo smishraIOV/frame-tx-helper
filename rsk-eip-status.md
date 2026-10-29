@@ -230,7 +230,7 @@ Meta: [EIP-7773](https://eips.ethereum.org/EIPS/eip-7773).
 | [7708](https://eips.ethereum.org/EIPS/eip-7708) | ETH Transfers Emit a Log (Last Call) | **No** |  |  | No RSKIP. |  |
 | [7732](https://eips.ethereum.org/EIPS/eip-7732) | Enshrined Proposer-Builder Separation (Last Call) | **N/A** |  |  | Ethereum consensus layer / beacon chain; no Rootstock equivalent. |  |
 | [7778](https://eips.ethereum.org/EIPS/eip-7778) | Block Gas Accounting without Refunds (Last Call) | **No** |  |  | No RSKIP. |  |
-| [7843](https://eips.ethereum.org/EIPS/eip-7843) | SLOTNUM Opcode (Last Call) | **N/A** |  |  | SLOTNUM is beacon-slot based; would need an RSK equivalent. |  |
+| [7843](https://eips.ethereum.org/EIPS/eip-7843) | SLOTNUM Opcode (Last Call) | **N/A** |  |  | Out of scope: SLOTNUM exposes the beacon-chain slot number, and Rootstock is merge-mined PoW with no beacon chain or slots. |  |
 | [7928](https://eips.ethereum.org/EIPS/eip-7928) | Block-Level Access Lists (Last Call) | **No** |  |  | No RSKIP. |  |
 | [7954](https://eips.ethereum.org/EIPS/eip-7954) | Increase Maximum Contract Size (Last Call) | **No** |  |  | No RSKIP. |  |
 | [7976](https://eips.ethereum.org/EIPS/eip-7976) | Increase Calldata Floor Cost (Last Call) | **No** |  |  | No RSKIP. |  |

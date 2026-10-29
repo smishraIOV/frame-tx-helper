@@ -194,7 +194,7 @@ R = {
     7951: ("No", "", "No RSKIP; no secp256r1 precompile (Rootstock has secp256k1 add/mul via RSKIP-516, Reed)."),
     # Amsterdam (scheduled)
     7688: BEACON, 7732: BEACON, 8045: BEACON, 8061: BEACON, 8282: BEACON,
-    7843: (N_A, "", "SLOTNUM is beacon-slot based; would need an RSK equivalent."),
+    7843: (N_A, "", "Out of scope: SLOTNUM exposes the beacon-chain slot number, and Rootstock is merge-mined PoW with no beacon chain or slots."),
     8024: ("No", "", f"No RSKIP. Rootstock's old DUPN/SWAPN at 0xa8/0xa9 ({code('org/ethereum/vm/OpCode.java', 630)}) are disabled by {rskip(191, 'Iris')}."),
     # Retroactive
     684: ("Partial", "Wasabi", f"CREATE/CREATE2 only, since {rskip(125, 'Wasabi')}: fails on an address with code or non-zero nonce "

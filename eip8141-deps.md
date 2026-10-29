@@ -36,8 +36,8 @@ Decided 2026-10-27 (see the notes under Observations). The `Under assumptions` c
 | 1 | [8037](https://eips.ethereum.org/EIPS/eip-8037) | State Creation Gas Cost Increase | hard | Last Call ⚠ | Glamsterdam (scheduled) | 2780, 8038, 8141 | **No** | No RSKIP. | same |
 | 1 | [3651](https://eips.ethereum.org/EIPS/eip-3651) | Warm COINBASE | soft | Final | Shanghai | 8141 (body) | **No** | Nothing to warm: rskj has no warm/cold access tracking (see 2929). | **Won't**: Only meaningful with 2929. |
 | 1 | [7819](https://eips.ethereum.org/EIPS/eip-7819) | SETDELEGATE instruction | soft | Draft ⚠ | — | 8141 (body) | **No** | No RSKIP. | same |
-| 1 | [7843](https://eips.ethereum.org/EIPS/eip-7843) | SLOTNUM Opcode | soft | Last Call ⚠ | Glamsterdam (scheduled) | 8141 (body) | **N/A?** | SLOTNUM is beacon-slot based; RSK would need an equivalent or a no-op. | same |
-| 1 | [7997](https://eips.ethereum.org/EIPS/eip-7997) | Deterministic Factory Contract | soft | Last Call ⚠ | Glamsterdam (scheduled) | 8141 (body) | **?** | No RSKIP; check whether an equivalent factory is deployed on RSK. | same |
+| 1 | [7843](https://eips.ethereum.org/EIPS/eip-7843) | SLOTNUM Opcode | soft | Last Call ⚠ | Glamsterdam (scheduled) | 8141 (body) | **N/A** | Out of scope: SLOTNUM exposes the beacon-chain slot number, and Rootstock is merge-mined PoW with no beacon chain or slots. | same |
+| 1 | [7997](https://eips.ethereum.org/EIPS/eip-7997) | Deterministic Factory Contract | soft | Last Call ⚠ | Glamsterdam (scheduled) | 8141 (body) | **No** | No RSKIP. | same |
 | 2 | [2](https://eips.ethereum.org/EIPS/eip-2) | Homestead Hard-fork Changes | hard + cited | Final | Homestead | 7702 | **Yes** | Complete since Lovell. (1) 53000 gas for contract-creation txs and (2) low-s signatures (`Transaction.java:321`) from genesis; (3) failed code deposit leaves no empty contract: top-level creates from genesis (`TransactionExecutor` rollback), internal CREATE/CREATE2 only since RSKIP-453 (Lovell, block 7,338,024; `Program.java:738`). (4) Difficulty formula: N/A, RSK uses its own. | same |
 | 2 | [161](https://eips.ethereum.org/EIPS/eip-161) | State trie clearing (invariant-preserving alternative) | hard | Final | Spurious Dragon | 1052, 7702, 8037, 8246 | **Partial** | Only rule (a), and only for CREATE/CREATE2: new contracts start at nonce 1 since RSKIP-125 (Wasabi; `Program.java:592`); contract-creation txs still start at 0 (`TransactionExecutor.java:403`). (b) 25000 new-account gas is charged even for zero value (`VM.java:1734`, `:1797`). (c) A zero-value transfer creates an empty account (`MutableRepository.java:322`). (d) No end-of-tx deletion of touched empty accounts; only SUICIDE deletions (`TransactionExecutor.java:622`). | same |
 | 2 | [684](https://eips.ethereum.org/EIPS/eip-684) | Revert creation in case of collision | hard | Final | Retroactive (all forks) | 8037 | **Partial** | CREATE/CREATE2 only, since RSKIP-125 (Wasabi): fails on an address with code or non-zero nonce (`Program.java:572`) or deleted earlier in the block (`:543`). Contract-creation txs have no collision check: the account is re-created, keeping only its balance (RSKIP-174; `TransactionExecutor.java:403`). A collision there would need a hash collision, so the gap is theoretical. | same |
@@ -77,8 +77,8 @@ graph LR
   E8037["8037<br/>State Creation Gas Cost Incr<br/><i>RSK: No</i>"]
   E3651["3651<br/>Warm COINBASE<br/><i>RSK: No</i>"]
   E7819["7819<br/>SETDELEGATE instruction<br/><i>RSK: No</i>"]
-  E7843["7843<br/>SLOTNUM Opcode<br/><i>RSK: N/A?</i>"]
-  E7997["7997<br/>Deterministic Factory Contra<br/><i>RSK: ?</i>"]
+  E7843["7843<br/>SLOTNUM Opcode<br/><i>RSK: N/A</i>"]
+  E7997["7997<br/>Deterministic Factory Contra<br/><i>RSK: No</i>"]
   E2["2<br/>Homestead Hard-fork Changes<br/><i>RSK: Yes</i>"]
   E161["161<br/>State trie clearing (invaria<br/><i>RSK: Partial</i>"]
   E684["684<br/>Revert creation in case of c<br/><i>RSK: Partial</i>"]
@@ -192,7 +192,7 @@ graph LR
   class E3651 no
   class E7819 no
   class E7843 other
-  class E7997 other
+  class E7997 no
   class E2 yes
   class E161 partial
   class E684 partial
@@ -217,15 +217,14 @@ Solid arrows = `requires`; dashed = cited in the body only. Each box shows its R
 
 - **Direct requirements (depth 1), 13:** [1559](https://eips.ethereum.org/EIPS/eip-1559) (Partial (WIP)), [2718](https://eips.ethereum.org/EIPS/eip-2718) (No), [2780](https://eips.ethereum.org/EIPS/eip-2780) (No), [3529](https://eips.ethereum.org/EIPS/eip-3529) (No), [3607](https://eips.ethereum.org/EIPS/eip-3607) (No), [4844](https://eips.ethereum.org/EIPS/eip-4844) (No), [7594](https://eips.ethereum.org/EIPS/eip-7594) (No), [7702](https://eips.ethereum.org/EIPS/eip-7702) (No), [7708](https://eips.ethereum.org/EIPS/eip-7708) (No), [7778](https://eips.ethereum.org/EIPS/eip-7778) (No), [7825](https://eips.ethereum.org/EIPS/eip-7825) (No), [7976](https://eips.ethereum.org/EIPS/eip-7976) (No), [8037](https://eips.ethereum.org/EIPS/eip-8037) (No).
 - **Transitive (depth 2–3), 12:** [161](https://eips.ethereum.org/EIPS/eip-161) (Partial), [684](https://eips.ethereum.org/EIPS/eip-684) (Partial), [1052](https://eips.ethereum.org/EIPS/eip-1052) (Partial), [2200](https://eips.ethereum.org/EIPS/eip-2200) (No), [2929](https://eips.ethereum.org/EIPS/eip-2929) (No), [2930](https://eips.ethereum.org/EIPS/eip-2930) (No), [6780](https://eips.ethereum.org/EIPS/eip-6780) (No), [7623](https://eips.ethereum.org/EIPS/eip-7623) (No), [7928](https://eips.ethereum.org/EIPS/eip-7928) (No), [8038](https://eips.ethereum.org/EIPS/eip-8038) (No), [8246](https://eips.ethereum.org/EIPS/eip-8246) (No), [2681](https://eips.ethereum.org/EIPS/eip-2681) (No).
-- **Soft (cited only), 3:** [3651](https://eips.ethereum.org/EIPS/eip-3651) (No), [7819](https://eips.ethereum.org/EIPS/eip-7819) (No), [7997](https://eips.ethereum.org/EIPS/eip-7997) (?).
+- **Soft (cited only), 3:** [3651](https://eips.ethereum.org/EIPS/eip-3651) (No), [7819](https://eips.ethereum.org/EIPS/eip-7819) (No), [7997](https://eips.ethereum.org/EIPS/eip-7997) (No).
 - **Already on RSK:** [2](https://eips.ethereum.org/EIPS/eip-2), [3541](https://eips.ethereum.org/EIPS/eip-3541).
 
 ### Remaining work under the project assumptions
 
-After applying the assumptions, **20** EIPs still need an RSK decision or an RSKIP, and **2** are unverified or need a substitute.
+After applying the assumptions, **21** EIPs still need an RSK decision or an RSKIP.
 
-- **Needs a decision or RSKIP:** [1559](https://eips.ethereum.org/EIPS/eip-1559) (Partial), [2780](https://eips.ethereum.org/EIPS/eip-2780) (No), [3529](https://eips.ethereum.org/EIPS/eip-3529) (No), [7708](https://eips.ethereum.org/EIPS/eip-7708) (No), [7778](https://eips.ethereum.org/EIPS/eip-7778) (No), [7825](https://eips.ethereum.org/EIPS/eip-7825) (No), [7976](https://eips.ethereum.org/EIPS/eip-7976) (No), [8037](https://eips.ethereum.org/EIPS/eip-8037) (No), [7819](https://eips.ethereum.org/EIPS/eip-7819) (No), [161](https://eips.ethereum.org/EIPS/eip-161) (Partial), [684](https://eips.ethereum.org/EIPS/eip-684) (Partial), [1052](https://eips.ethereum.org/EIPS/eip-1052) (Partial), [2200](https://eips.ethereum.org/EIPS/eip-2200) (No), [2930](https://eips.ethereum.org/EIPS/eip-2930) (Partial), [6780](https://eips.ethereum.org/EIPS/eip-6780) (No), [7623](https://eips.ethereum.org/EIPS/eip-7623) (No), [7928](https://eips.ethereum.org/EIPS/eip-7928) (No), [8038](https://eips.ethereum.org/EIPS/eip-8038) (Replace), [8246](https://eips.ethereum.org/EIPS/eip-8246) (No), [2681](https://eips.ethereum.org/EIPS/eip-2681) (No).
-- **Unverified or needs a substitute:** [7843](https://eips.ethereum.org/EIPS/eip-7843) (N/A?), [7997](https://eips.ethereum.org/EIPS/eip-7997) (?).
+- **Needs a decision or RSKIP:** [1559](https://eips.ethereum.org/EIPS/eip-1559) (Partial), [2780](https://eips.ethereum.org/EIPS/eip-2780) (No), [3529](https://eips.ethereum.org/EIPS/eip-3529) (No), [7708](https://eips.ethereum.org/EIPS/eip-7708) (No), [7778](https://eips.ethereum.org/EIPS/eip-7778) (No), [7825](https://eips.ethereum.org/EIPS/eip-7825) (No), [7976](https://eips.ethereum.org/EIPS/eip-7976) (No), [8037](https://eips.ethereum.org/EIPS/eip-8037) (No), [7819](https://eips.ethereum.org/EIPS/eip-7819) (No), [7997](https://eips.ethereum.org/EIPS/eip-7997) (No), [161](https://eips.ethereum.org/EIPS/eip-161) (Partial), [684](https://eips.ethereum.org/EIPS/eip-684) (Partial), [1052](https://eips.ethereum.org/EIPS/eip-1052) (Partial), [2200](https://eips.ethereum.org/EIPS/eip-2200) (No), [2930](https://eips.ethereum.org/EIPS/eip-2930) (Partial), [6780](https://eips.ethereum.org/EIPS/eip-6780) (No), [7623](https://eips.ethereum.org/EIPS/eip-7623) (No), [7928](https://eips.ethereum.org/EIPS/eip-7928) (No), [8038](https://eips.ethereum.org/EIPS/eip-8038) (Replace), [8246](https://eips.ethereum.org/EIPS/eip-8246) (No), [2681](https://eips.ethereum.org/EIPS/eip-2681) (No).
 
 ### Observations
 
@@ -240,6 +239,6 @@ After applying the assumptions, **20** EIPs still need an RSK decision or an RSK
 - **Blob dependencies.** 4844 and 7594 are in `requires` mainly for BLOBHASH and the blob-wrapper format. Rootstock has no blobs (RSKIP-558 is Draft). We need to establish whether 8141 can work on RSK without them, for example with zero blobs per frame tx.
   * @claude: blobs are not critical to frame transactions. For this project we can assume that if needed, eip-4844 can be activated on Rootstock (RSKIP-558)
   * → Applied as assumption 4: 4844 is If needed, 7594 is Not needed.
-- **Beacon-chain items (4788, 4895, 7843 SLOTNUM)** don't map to Rootstock and need an RSK-specific substitute or exclusion.
+- **Beacon-chain items (4788, 4895, 7843 SLOTNUM)** are N/A: Rootstock is merge-mined PoW with no beacon chain or slots, so they're out of scope.
 - **Moving targets.** 8141 is Draft, and 2780, 7708, 7778, 7843, 7928, 7976, 7997, 8037, 8038 and 8246 are Last Call. Most are scheduled for Glamsterdam, so their specs may still change. SELFDESTRUCT is moving on both sides: RSKIP-701 on Rootstock and EIP-4758 on Ethereum (see 6780).
-- **Still to verify:** 7997, marked `?` above. Resolved: 3607 (not adopted, not needed per RSKIP-545), 161 (Partial: nonce rule only, checked rule by rule), and 2200, 2929, 3529 and 3651 (checked against code).
+- **Verification:** every row is now checked. Resolved along the way: 7997 (No RSKIP), 7843 (N/A, out of scope), 3607 (not adopted, not needed per RSKIP-545), 161 (Partial: nonce rule only, checked rule by rule), and 2200, 2929, 3529 and 3651 (checked against code).

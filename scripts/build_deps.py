@@ -53,10 +53,10 @@ RSK = {
     7778: ("No", "No RSKIP."),
     7819: ("No", "No RSKIP."),
     7825: ("No", "No consensus per-tx cap: execution only checks the tx against the remaining block gas (`TransactionExecutor.java:265`). The 2^60 `Constants.TRANSACTION_GAS_CAP` is used only by the pool (`TxValidatorGasLimitValidator.java:40`); 7825's cap is 2^24. RSKIP-144 sublist limits (Reed 8.1.0, not scheduled on mainnet) are a different rule."),
-    7843: ("N/A?", "SLOTNUM is beacon-slot based; RSK would need an equivalent or a no-op."),
+    7843: ("N/A", "Out of scope: SLOTNUM exposes the beacon-chain slot number, and Rootstock is merge-mined PoW with no beacon chain or slots."),
     7928: ("No", "No RSKIP."),
     7976: ("No", "No RSKIP."),
-    7997: ("?", "No RSKIP; check whether an equivalent factory is deployed on RSK."),
+    7997: ("No", "No RSKIP."),
     8037: ("No", "No RSKIP."),
     8038: ("No", "No RSKIP."),
     8246: ("No", "No RSKIP."),
@@ -213,9 +213,12 @@ def eff(n):
 todo = [n for n in order if n != ROOT and eff(n) not in resolved | {"Yes"}]
 spec = [n for n in todo if eff(n) in ("No", "Replace", "Partial", "Partial (WIP)")]
 unk = [n for n in todo if eff(n) in ("?", "N/A?")]
-w(f"After applying the assumptions, **{len(spec)}** EIPs still need an RSK decision or an RSKIP, and **{len(unk)}** are unverified or need a substitute.\n")
+w(f"After applying the assumptions, **{len(spec)}** EIPs still need an RSK decision or an RSKIP"
+  + (f", and **{len(unk)}** are unverified or need a substitute" if unk else "") + ".\n")
 w("- **Needs a decision or RSKIP:** " + ", ".join(f"{link(n)} ({eff(n)})" for n in spec) + ".")
-w("- **Unverified or needs a substitute:** " + ", ".join(f"{link(n)} ({eff(n)})" for n in unk) + ".\n")
+if unk:
+    w("- **Unverified or needs a substitute:** " + ", ".join(f"{link(n)} ({eff(n)})" for n in unk) + ".")
+w("")
 
 w("### Observations\n")
 w("- **Rootstock has no typed transactions at all.** No 2718 handling in rskj master, and none of RSKIP-543/545/546 is in `ConsensusRule.java`. EIP-2718 is the base of the tree: 1559, 2930, 4844, 7702 and 8141 itself all depend on it. RSKIP-543/545/546 (envelope, 7702, Type 1/2) exist but are Draft, so they're the natural first step.")
@@ -232,9 +235,9 @@ w("  * → Applied as assumptions 2 and 3. 2929 and 3651 become Won't, and 8038 
 w("- **Blob dependencies.** 4844 and 7594 are in `requires` mainly for BLOBHASH and the blob-wrapper format. Rootstock has no blobs (RSKIP-558 is Draft). We need to establish whether 8141 can work on RSK without them, for example with zero blobs per frame tx.")
 w("  * @claude: blobs are not critical to frame transactions. For this project we can assume that if needed, eip-4844 can be activated on Rootstock (RSKIP-558)")
 w("  * → Applied as assumption 4: 4844 is If needed, 7594 is Not needed.")
-w("- **Beacon-chain items (4788, 4895, 7843 SLOTNUM)** don't map to Rootstock and need an RSK-specific substitute or exclusion.")
+w("- **Beacon-chain items (4788, 4895, 7843 SLOTNUM)** are N/A: Rootstock is merge-mined PoW with no beacon chain or slots, so they're out of scope.")
 w("- **Moving targets.** 8141 is Draft, and 2780, 7708, 7778, 7843, 7928, 7976, 7997, 8037, 8038 and 8246 are Last Call. Most are scheduled for Glamsterdam, so their specs may still change. SELFDESTRUCT is moving on both sides: RSKIP-701 on Rootstock and EIP-4758 on Ethereum (see 6780).")
-w("- **Still to verify:** 7997, marked `?` above. Resolved: 3607 (not adopted, not needed per RSKIP-545), 161 (Partial: nonce rule only, checked rule by rule), and 2200, 2929, 3529 and 3651 (checked against code).")
+w("- **Verification:** every row is now checked. Resolved along the way: 7997 (No RSKIP), 7843 (N/A, out of scope), 3607 (not adopted, not needed per RSKIP-545), 161 (Partial: nonce rule only, checked rule by rule), and 2200, 2929, 3529 and 3651 (checked against code).")
 
 out_path.write_text("\n".join(out) + "\n", encoding="utf-8")
 print("hard:", sorted(hard))
