@@ -118,10 +118,10 @@ R = {
     # Berlin
     2565: ("No", "", f"MODEXP keeps EIP-198 pricing (`GQUAD_DIVISOR = 20`)."),
     2718: ("No", "", f"No typed txs in rskj. {rskip(543)} Draft ([PR #708]({PR_URL.format(708)})).", "Assumed active"),
-    2929: ("No", "", f"Not adopted; see {rskip(239)} (Reprice Trie Read Opcodes).", "Won't (project decision)"),
+    2929: ("No", "", "Not adopted; project decision not to adopt (`readme.md` assumption 3).", "Won't (project decision)"),
     2930: ("No", "", f"No access-list code in rskj. {rskip(546)} ([PR #709]({PR_URL.format(709)}), Draft) only specifies the access list's RLP shape.", "Partial: RSKIP-546: access list RLP shape only; charged gas, no impact on execution."),
     # London
-    1559: ("Partial", "", f"Partial through {rskip(546)} ([PR #709]({PR_URL.format(709)}), Draft): Type-2 encoding only; base fee effectively zero, no dynamic fee market.", "Partial: Type-2 encoding, zero base fee"),
+    1559: ("Partial (WIP)", "", f"Partial through {rskip(546)} ([PR #709]({PR_URL.format(709)}), Draft): Type-2 encoding only; base fee effectively zero, no dynamic fee market.", "Partial: Type-2 encoding, zero base fee"),
     3198: ("Yes", "Arrowhead", f"BASEFEE via {rskip(412, 'Arrowhead')} ({code('org/ethereum/vm/VM.java', 1950)}); returns the block's `minimumGasPrice` ({code('org/ethereum/vm/VM.java', 1101)})."),
     3529: ("No", "", f"Pre-London refunds ({code('org/ethereum/vm/GasCost.java', 61)}: REFUND_SSTORE 15000, SUICIDE_REFUND 24000)."),
     3541: ("Yes", "Vetiver", f"{rskip(544, 'Vetiver')}, on both paths: CREATE/CREATE2 ({code('org/ethereum/vm/program/Program.java', 712)}) "
@@ -192,11 +192,19 @@ for n in (2780, 7708, 7778, 7928, 7954, 7976, 7981, 7997, 8037, 8038, 8246):
 
 # EIPs/ERCs outside the hard forks that Rootstock adopted through an RSKIP.
 OTHER = [
-    (55, f"{rskip(60)}: chain-ID-prefixed variant of the EIP-55 checksum."),
-    (1167, f"{rskip(159)} (DApp layer)."),
-    (1820, f"{rskip(148)} (DApp layer): ERC-1820 registry."),
-    (712, f"{rskip(712)} (UI layer): RSK variant of typed-data signing."),
+    (55, f"**Unverified:** {rskip(60)}: chain-ID-prefixed variant of the EIP-55 checksum."),
+    (1167, f"**Unverified:** {rskip(159)} (DApp layer)."),
+    (1820, f"**Unverified:** {rskip(148)} (DApp layer): ERC-1820 registry."),
+    (712, f"**Unverified:** {rskip(712)} (UI layer): RSK variant of typed-data signing."),
 ]
+
+# Rows whose evidence was taken on trust (a brief citation, not a rule-by-rule check): shown as "?" until validated.
+UNVERIFIED = {140, 150, 155, 211, 1108, 2028, 2200, 2929, 3529, 3651, 3860, 7823}
+CLAIMED = {}
+for n in UNVERIFIED:
+    st, up, ev, *rest = R[n]
+    CLAIMED[n] = st
+    R[n] = ("?", up, f"**Unverified** (claimed {st}): {ev}", *rest)
 
 
 def title(n):
@@ -228,10 +236,10 @@ w = out.append
 w("# Ethereum EIPs by hard fork vs Rootstock\n")
 w("Task 2 in `readme.md`: every Core EIP in each Ethereum hard fork, its Rootstock status, the RSK network upgrade and mainnet "
   "activation height, and the evidence. Code links point at "
-  f"[`rsksmart/rskj@{RSKJ}`](https://github.com/rsksmart/rskj/tree/{RSKJ}) (origin/master, 2026-10-16). RSKIP statuses come from `rsksmart/RSKIPs` `a389ec2`; "
+  f"[`rsksmart/rskj@{RSKJ}`](https://github.com/rsksmart/rskj/tree/{RSKJ}) (origin/master, 2026-10-16). RSKIP statuses come from `rsksmart/RSKIPs` `a389ec2`, plus open PR heads as of 2026-10-28 (#701 RSKIP-701 `658944d`, #708 RSKIP-543, #709 RSKIP-546, #710 RSKIP-545 `4a8a1d9`); "
   "fork lists come from the hardfork meta EIPs, linked per section.\n")
 w("**RSK status:** **Yes** = fully active · **Partial** = some of it active (the evidence says which part) · **Adapted** = same goal, RSK-specific design · "
-  "**No** = not active · **N/A** = doesn't apply to Rootstock (beacon chain, difficulty bomb, reverted) · **?** = not verified. "
+  "**No** = not active · **N/A** = doesn't apply to Rootstock (beacon chain, difficulty bomb, reverted) · **?** = not verified · **Partial (WIP)** = only covered by a Draft RSKIP that is work in progress; nothing active yet. Rows marked **Unverified** were taken on trust (a brief citation, not a rule-by-rule check) and show **?** until validated; the claimed status is kept in the evidence. "
   "The *Under assumptions* column applies the project assumptions in `readme.md` where they change the picture.\n")
 w("**No RSKIP** means no RSKIP on any of the 95 branches of `rsksmart/RSKIPs` cites the EIP or its feature, and rskj `master` has no matching code (checked 2026-10-28, with a control search that does find EIP-3198 in RSKIP-412).\n")
 
@@ -243,7 +251,7 @@ for name, meta_eip, nums in FORKS:
     per_fork.append((name, meta_eip, nums, c))
     counts.update(c)
 counts.update(R.get(n, ("?",))[0] for n in RETROACTIVE)
-cols = ["Yes", "Partial", "Adapted", "No", "N/A", "?"]
+cols = ["Yes", "Partial", "Partial (WIP)", "Adapted", "No", "N/A", "?"]
 w("## Summary\n")
 w("| Fork | Core EIPs | " + " | ".join(cols) + " |")
 w("|---|---|" + "---|" * len(cols))
@@ -255,9 +263,9 @@ w(f"| Retroactive | {len(RETROACTIVE)} | " + " | ".join(str(rc.get(k, 0) or "") 
 total = sum(len(n) for _, _, n, _ in per_fork) + len(RETROACTIVE)
 w(f"| **Total** | **{total}** | " + " | ".join(f"**{counts.get(k, 0)}**" for k in cols) + " |\n")
 applicable = total - counts[N_A]
-w(f"Of the {applicable} EIPs that apply to Rootstock, {counts['Yes']} are fully active, {counts['Partial'] + counts['Adapted']} are partial or adapted, "
+w(f"Of the {applicable} EIPs that apply to Rootstock, {counts['Yes']} are fully active, {counts['Partial'] + counts['Adapted']} are partial or adapted, {counts['Partial (WIP)']} is partial only through Draft RSKIP work, "
   f"{counts['No']} are missing, and {counts['?']} {'still needs' if counts['?'] == 1 else 'still need'} verifying. Rootstock tracks Ethereum's EVM opcode and precompile additions closely up to Cancun (except blobs), "
-  "but skipped every gas-model change since Berlin (2929, 2930, 3529, 2200, 1884 repricing) and has no typed transactions.\n")
+  "but appears to have skipped the gas-model changes since Berlin (2929, 2930, 3529, 2200, 1884 repricing; several still unverified) and has no typed transactions.\n")
 
 for name, meta_eip, nums, c in per_fork:
     if not nums:
@@ -288,12 +296,14 @@ w("## Rootstock upgrades that brought in Ethereum EIPs\n")
 w("| RSK upgrade | Mainnet height | EIPs |\n|---|---|---|")
 by_up = {}
 for n, v in R.items():
-    if v[1] and v[0] in ("Yes", "Partial", "Adapted"):
+    st = CLAIMED.get(n, v[0])
+    if v[1] and st in ("Yes", "Partial", "Adapted"):
         by_up.setdefault(v[1], []).append(n)
 for up in HEIGHT:
     if up in by_up:
-        w(f"| {up} | {HEIGHT[up]:,} | " + ", ".join(str(n) for n in sorted(by_up[up])) + " |")
+        w(f"| {up} | {HEIGHT[up]:,} | " + ", ".join(f"{n}?" if n in CLAIMED else str(n) for n in sorted(by_up[up])) + " |")
 w("")
+w("`?` after an EIP = claimed, not yet verified.\n")
 
 out_path.write_text("\n".join(out) + "\n", encoding="utf-8")
 missing = sorted(n for _, _, ns, _ in per_fork for n in ns if n not in R)

@@ -32,11 +32,11 @@ RSK = {
     684: ("Partial", "CREATE/CREATE2 only, since RSKIP-125 (Wasabi): fails on an address with code or non-zero nonce (`Program.java:572`) or deleted earlier in the block (`:543`). Contract-creation txs have no collision check: the account is re-created, keeping only its balance (RSKIP-174; `TransactionExecutor.java:403`). A collision there would need a hash collision, so the gap is theoretical."),
     2681: ("No", "No consensus rule or RSKIP: nonces are `BigInteger` and block validation only checks equality (`BlockTxsValidationRule.java:89-91`); CREATE/CREATE2 has no nonce-cap check (`Program.java:472`). Only the tx pool (`TxPendingValidator.java:66`) and block-building sort (`PendingState.java:194`) reject nonces over 8 bytes, which still allows 2^64-1 (the EIP forbids it). Related: RSKIP-545 (PR #710) requires set-code authorization nonces < 2^64-1."),
     1052: ("Partial", "RSKIP-140 (Papyrus), fixed by RSKIP-169 (Iris): gas 400, 0 for non-existent accounts, empty-code hash for accounts without code (`MutableRepository.java:217-222`). Deviation: EIP-1052 returns 0 for EIP-161 *empty* accounts; RSK returns the empty-code hash. That matters because RSK does create empty accounts (161 rule c)."),
-    1559: ("Partial", "Partial through RSKIP-546 ([PR #709](https://github.com/rsksmart/RSKIPs/pull/709), Draft): Type-2 encoding only; base fee effectively zero, no dynamic fee market."),
+    1559: ("Partial (WIP)", "Partial through RSKIP-546 ([PR #709](https://github.com/rsksmart/RSKIPs/pull/709), Draft): Type-2 encoding only; base fee effectively zero, no dynamic fee market."),
     2200: ("No", "Flat SSTORE costs in `GasCost.java`."),
     2718: ("No", "RSKIP-543 Typed Transaction Envelope: Draft."),
     2780: ("No", "No RSKIP."),
-    2929: ("No", "Not adopted; see RSKIP-239 (Reprice Trie Read Opcodes, cites 2929)."),
+    2929: ("No", "Not adopted; project decision not to adopt (assumption 3)."),
     2930: ("No", "No access-list code in rskj; needs 2718. RSKIP-546 (Draft) only specifies the access list's RLP shape."),
     3529: ("No", "Pre-London refunds still in `GasCost.java` (REFUND_SSTORE 15000, SUICIDE_REFUND 24000)."),
     3541: ("Yes", "RSKIP-544, Vetiver (block 8,804,200), on both paths: CREATE/CREATE2 (`Program.java:712`) and contract-creation txs (`TransactionExecutor.java:541`)."),
@@ -62,6 +62,11 @@ RSK = {
     8246: ("No", "No RSKIP."),
 }
 
+# Rows whose evidence was taken on trust (a brief citation, not a rule-by-rule check): shown as "?" until validated.
+UNVERIFIED = {2200, 2929, 3529, 3651}
+for _n in UNVERIFIED:
+    _st, _ev = RSK[_n]
+    RSK[_n] = ("?", f"**Unverified** (claimed {_st}): {_ev}")
 
 # Status under the project assumptions in `## Project assumptions` (user decisions, 2026-10-27).
 # Anything not listed keeps its current RSK status.
@@ -131,9 +136,9 @@ w("# EIP-8141 (Frame Transaction): dependency tree and Rootstock status\n")
 w(f"EIP-8141 is **{meta[ROOT]['status']}** (created {meta[ROOT].get('created')}). This is Task 1 in `readme.md`: `requires:` walked to depth {MAX_DEPTH}, "
   "plus the EIPs that are only cited in the 8141 body (\"soft\", not expanded).\n")
 w("Sources: `ethereum/EIPs` (fetched 2026-10-27) for preambles and the hardfork metas (7600 Pectra, 7607 Fusaka, 7773 Glamsterdam); "
-  "`rsksmart/rskj` master `1e95a3b` and `rsksmart/RSKIPs` `a389ec2` for Rootstock status. See `rsk-eip-status.md` for the wider evidence.\n")
+  "`rsksmart/rskj` master `1e95a3b` and `rsksmart/RSKIPs` `a389ec2`, plus open PR heads as of 2026-10-28 (#701 RSKIP-701 `658944d`, #708 RSKIP-543, #709 RSKIP-546, #710 RSKIP-545 `4a8a1d9`) for Rootstock status. See `rsk-eip-status.md` for the wider evidence.\n")
 w("Legend: **hard** = reached through `requires`; **soft** = only cited in the 8141 body; **hard + cited** = both. "
-  "RSK: Yes / Partial / No / N/A / ? (not verified). ⚠ = not Final yet, so the spec can still change.\n")
+  "RSK: Yes / Partial / No / N/A / ? (not verified); **Partial (WIP)** = only covered by a Draft RSKIP that is work in progress; nothing active yet. Rows marked **Unverified** were taken on trust (a brief citation, not a rule-by-rule check) and show **?** until validated; the claimed status is kept in the evidence. ⚠ = not Final yet, so the spec can still change.\n")
 w("**No RSKIP** means no RSKIP on any of the 95 branches of `rsksmart/RSKIPs` cites the EIP or its feature, and rskj `master` has no matching code (checked 2026-10-28, with a control search that does find EIP-3198 in RSKIP-412).\n")
 
 w("## Project assumptions\n")
@@ -166,7 +171,7 @@ w(f"Not expanded (`requires` of depth-{MAX_DEPTH} nodes): {', '.join(link(n) for
 w("## Graph\n")
 w("```mermaid")
 w("graph LR")
-status_class = {"Yes": "yes", "Partial": "partial", "No": "no"}
+status_class = {"Yes": "yes", "Partial": "partial", "Partial (WIP)": "partial", "No": "no"}
 for n in order:
     tag = "EIP-8141 (root)" if n == ROOT else f"RSK: {RSK.get(n, ('?',))[0]}"
     w(f'  E{n}["{n}<br/>{meta[n]["title"][:28]}<br/><i>{tag}</i>"]')
@@ -191,7 +196,7 @@ w("```\n")
 w("Solid arrows = `requires`; dashed = cited in the body only. Each box shows its Rootstock status; the border repeats it: green = on RSK, amber = partial, red = missing, grey dashed = N/A or unverified, blue = EIP-8141.\n")
 
 w("## What's missing on Rootstock\n")
-missing = [n for n in order if n != ROOT and RSK.get(n, ("?",))[0] in ("No", "Partial", "?")]
+missing = [n for n in order if n != ROOT and RSK.get(n, ("?",))[0] in ("No", "Partial", "Partial (WIP)", "?")]
 hard1 = [n for n in missing if n in hard and depth[n] == 1]
 hard2 = [n for n in missing if n in hard and depth[n] >= 2]
 softm = [n for n in missing if n not in hard]
@@ -206,7 +211,7 @@ resolved = {"Assumed", "If needed", "Not needed", "Won't", "N/A"}
 def eff(n):
     return ASSUMED[n][0] if n in ASSUMED else RSK.get(n, ("?",))[0]
 todo = [n for n in order if n != ROOT and eff(n) not in resolved | {"Yes"}]
-spec = [n for n in todo if eff(n) in ("No", "Replace", "Partial")]
+spec = [n for n in todo if eff(n) in ("No", "Replace", "Partial", "Partial (WIP)")]
 unk = [n for n in todo if eff(n) in ("?", "N/A?")]
 w(f"After applying the assumptions, **{len(spec)}** EIPs still need an RSK decision or an RSKIP, and **{len(unk)}** are unverified or need a substitute.\n")
 w("- **Needs a decision or RSKIP:** " + ", ".join(f"{link(n)} ({eff(n)})" for n in spec) + ".")
@@ -218,7 +223,7 @@ w("  * @claude: For this project, assume that RSKIP-543, 545, and 546 will be ac
 w("  * For the present, the lates versions of these RSKIPS live as PRs 708, 709, and 710 ")
 w("  * → Applied as assumption 1 (PR #708 = RSKIP-543, #709 = RSKIP-546, #710 = RSKIP-545). "
   "RSKIP-546 gives 1559 and 2930 their encodings only: base fee is effectively zero, and the access list is charged for bandwidth but doesn't affect execution.")
-w("- **Gas-model conflicts.** 2929, 2930, 3529 and 3651, plus the newer 2780, 7778, 8037 and 8038, all assume Ethereum's access-list, refund and state-gas model. Rootstock's storage rent design deliberately did not adopt 2929. Each of these needs an explicit RSK decision: adopt, adapt, or define 8141 gas without it.")
+w("- **Gas-model conflicts.** 2929, 2930, 3529 and 3651, plus the newer 2780, 7778, 8037 and 8038, all assume Ethereum's access-list, refund and state-gas model. Rootstock does not adopt 2929 (project decision). Each of these needs an explicit RSK decision: adopt, adapt, or define 8141 gas without it.")
 w("  * @claude: For this project, treat all storage rent related RSKIPs as rejected. ")
 w("  * @claude: for the present, assume that gas price difference from eip-2929 will not be implemented on Rootstock. We will define 8141 gas without it - with our own rationale.")
 w("  * → Applied as assumptions 2 and 3. 2929 and 3651 become Won't, and 8038 becomes Replace. "
@@ -229,7 +234,7 @@ w("  * @claude: blobs are not critical to frame transactions. For this project w
 w("  * → Applied as assumption 4: 4844 is If needed, 7594 is Not needed.")
 w("- **Beacon-chain items (4788, 4895, 7843 SLOTNUM)** don't map to Rootstock and need an RSK-specific substitute or exclusion.")
 w("- **Moving targets.** 8141 is Draft, and 2780, 7708, 7778, 7843, 7928, 7976, 7997, 8037, 8038 and 8246 are Last Call. Most are scheduled for Glamsterdam, so their specs may still change. SELFDESTRUCT is moving on both sides: RSKIP-701 on Rootstock and EIP-4758 on Ethereum (see 6780).")
-w("- **Still to verify:** 7997, marked `?` above. Resolved: 3607 (not adopted, not needed per RSKIP-545) and 161 (Partial: nonce rule only, checked rule by rule).")
+w("- **Still to verify:** 7997, plus 2200, 2929, 3529 and 3651, whose evidence was taken on trust; all marked `?` above. Resolved: 3607 (not adopted, not needed per RSKIP-545) and 161 (Partial: nonce rule only, checked rule by rule).")
 
 out_path.write_text("\n".join(out) + "\n", encoding="utf-8")
 print("hard:", sorted(hard))
