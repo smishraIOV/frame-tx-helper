@@ -119,7 +119,7 @@ R = {
     2565: ("No", "", f"MODEXP keeps EIP-198 pricing (`GQUAD_DIVISOR = 20`)."),
     2718: ("No", "", f"No typed txs in rskj. {rskip(543)} Draft ([PR #708]({PR_URL.format(708)})).", "Assumed active"),
     2929: ("No", "", f"Not adopted; see {rskip(239)} (Reprice Trie Read Opcodes).", "Won't (project decision)"),
-    2930: ("No", "", f"No access-list code in rskj. {rskip(546)} ([PR #709]({PR_URL.format(709)}), Draft) only specifies the access list's RLP shape.", "Partial: encoding only"),
+    2930: ("No", "", f"No access-list code in rskj. {rskip(546)} ([PR #709]({PR_URL.format(709)}), Draft) only specifies the access list's RLP shape.", "Partial: RSKIP-546: access list RLP shape only; charged gas, no impact on execution."),
     # London
     1559: ("Partial", "", f"Partial through {rskip(546)} ([PR #709]({PR_URL.format(709)}), Draft): Type-2 encoding only; base fee effectively zero, no dynamic fee market.", "Partial: Type-2 encoding, zero base fee"),
     3198: ("Yes", "Arrowhead", f"BASEFEE via {rskip(412, 'Arrowhead')} ({code('org/ethereum/vm/VM.java', 1950)}); returns the block's `minimumGasPrice` ({code('org/ethereum/vm/VM.java', 1101)})."),

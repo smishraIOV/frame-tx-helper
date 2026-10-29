@@ -70,7 +70,7 @@ ASSUMED = {
     2718: ("Assumed", f"RSKIP-543 ([PR #708]({PR.format(708)}))."),
     7702: ("Assumed", f"RSKIP-545 ([PR #710]({PR.format(710)}))."),
     1559: ("Partial", f"Type-2 encoding via RSKIP-546 ([PR #709]({PR.format(709)})); base fee effectively zero, no dynamic fee market."),
-    2930: ("Partial", "Type-1 encoding and access-list gas via RSKIP-546; the access list has no effect on execution (no 2929)."),
+    2930: ("Partial", "RSKIP-546: access list RLP shape only; charged gas, no impact on execution."),
     4844: ("If needed", "Can be activated via RSKIP-558; not critical for frame txs."),
     7594: ("Not needed", "Only matters if blobs are used; PeerDAS is DA-layer networking."),
     2929: ("Won't", "Project decision: 2929 gas differences not implemented; 8141 gas defined with RSK rationale."),

@@ -122,7 +122,7 @@ Meta: [EIP-7568](https://eips.ethereum.org/EIPS/eip-7568).
 | [2565](https://eips.ethereum.org/EIPS/eip-2565) | ModExp Gas Cost | **No** |  |  | MODEXP keeps EIP-198 pricing (`GQUAD_DIVISOR = 20`). |  |
 | [2718](https://eips.ethereum.org/EIPS/eip-2718) | Typed Transaction Envelope | **No** |  |  | No typed txs in rskj. [RSKIP-543](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP543.md) Draft ([PR #708](https://github.com/rsksmart/RSKIPs/pull/708)). | Assumed active |
 | [2929](https://eips.ethereum.org/EIPS/eip-2929) | Gas cost increases for state access opcodes | **No** |  |  | Not adopted; see [RSKIP-239](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP239.md) (Reprice Trie Read Opcodes). | Won't (project decision) |
-| [2930](https://eips.ethereum.org/EIPS/eip-2930) | Optional access lists | **No** |  |  | No access-list code in rskj. [RSKIP-546](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP546.md) ([PR #709](https://github.com/rsksmart/RSKIPs/pull/709), Draft) only specifies the access list's RLP shape. | Partial: encoding only |
+| [2930](https://eips.ethereum.org/EIPS/eip-2930) | Optional access lists | **No** |  |  | No access-list code in rskj. [RSKIP-546](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP546.md) ([PR #709](https://github.com/rsksmart/RSKIPs/pull/709), Draft) only specifies the access list's RLP shape. | Partial: RSKIP-546: access list RLP shape only; charged gas, no impact on execution. |
 
 ## London
 
