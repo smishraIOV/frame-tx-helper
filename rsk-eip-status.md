@@ -15,22 +15,22 @@ Task 2 in `readme.md`: every Core EIP in each Ethereum hard fork, its Rootstock 
 | Spurious Dragon | 4 | 3 | 1 |  |  |  |  |  |
 | Byzantium | 9 | 7 |  |  | 1 |  | 1 |  |
 | Constantinople | 5 | 2 | 1 |  |  |  | 2 |  |
-| Istanbul | 6 | 4 | 1 |  |  |  |  | 1 |
+| Istanbul | 6 | 4 | 1 |  |  | 1 |  |  |
 | Muir Glacier | 1 |  |  |  |  |  | 1 |  |
-| Berlin | 4 |  |  |  |  | 3 |  | 1 |
-| London | 5 | 2 |  | 1 |  |  | 1 | 1 |
+| Berlin | 4 |  |  |  |  | 4 |  |  |
+| London | 5 | 2 |  | 1 |  | 1 | 1 |  |
 | Arrow Glacier | 1 |  |  |  |  |  | 1 |  |
 | Gray Glacier | 1 |  |  |  |  |  | 1 |  |
 | Paris (The Merge) | 2 |  |  |  |  |  | 2 |  |
-| Shanghai | 5 | 1 |  |  |  |  | 2 | 2 |
+| Shanghai | 5 | 1 |  |  |  | 1 | 2 | 1 |
 | Cancun (Dencun) | 6 | 2 |  |  |  | 3 | 1 |  |
 | Prague (Pectra) | 10 |  |  |  |  | 5 | 5 |  |
 | Osaka (Fusaka) | 9 |  |  |  |  | 7 | 1 | 1 |
 | Amsterdam (Glamsterdam, scheduled) | 18 |  |  |  |  | 12 | 6 |  |
 | Retroactive | 4 |  | 1 |  |  | 2 |  | 1 |
-| **Total** | **93** | **23** | **5** | **1** | **1** | **32** | **24** | **7** |
+| **Total** | **93** | **23** | **5** | **1** | **1** | **36** | **24** | **3** |
 
-Of the 69 EIPs that apply to Rootstock, 23 are fully active, 6 are partial or adapted, 1 is partial only through Draft RSKIP work, 32 are missing, and 7 still need verifying. Rootstock tracks Ethereum's EVM opcode and precompile additions closely up to Cancun (except blobs), but appears to have skipped the gas-model changes since Berlin (2929, 2930, 3529, 2200, 1884 repricing; several still unverified) and has no typed transactions.
+Of the 69 EIPs that apply to Rootstock, 23 are fully active, 6 are partial or adapted, 1 is partial only through Draft RSKIP work, 36 are missing, and 3 still need verifying. Rootstock tracks Ethereum's EVM opcode and precompile additions closely up to Cancun (except blobs), but appears to have skipped the gas-model changes since Berlin (2929, 2930, 3529, 2200, 1884 repricing; several still unverified) and has no typed transactions.
 
 ## Homestead
 
@@ -103,7 +103,7 @@ Meta: [EIP-1679](https://eips.ethereum.org/EIPS/eip-1679).
 | [1344](https://eips.ethereum.org/EIPS/eip-1344) | ChainID opcode | **Yes** | Papyrus | 2,392,700 | CHAINID via [RSKIP-152](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP152.md) (Papyrus) ([`VM.java:1956`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/VM.java#L1956)). |  |
 | [1884](https://eips.ethereum.org/EIPS/eip-1884) | Repricing for trie-size-dependent opcodes | **Partial** | Papyrus | 2,392,700 | Only SELFBALANCE, via [RSKIP-151](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP151.md) (Papyrus) ([`VM.java:1962`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/VM.java#L1962)); SLOAD/BALANCE/EXTCODEHASH repricing not adopted. |  |
 | [2028](https://eips.ethereum.org/EIPS/eip-2028) | Transaction data gas cost reduction | **Yes** | Arrowhead | 6,223,700 | Non-zero calldata byte costs 16 (was 68) via [RSKIP-400](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP400.md) (Arrowhead) ([`Transaction.java:230`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/core/Transaction.java#L230), [`GasCost.java:80`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/GasCost.java#L80)). |  |
-| [2200](https://eips.ethereum.org/EIPS/eip-2200) | Structured Definitions for Net Gas Metering | **?** |  |  | **Unverified** (claimed No): Flat SSTORE costs ([`GasCost.java:39`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/GasCost.java#L39)). |  |
+| [2200](https://eips.ethereum.org/EIPS/eip-2200) | Structured Definitions for Net Gas Metering | **No** |  |  | Pre-Istanbul SSTORE with no original-value tracking: set 20000 ([`VM.java:1332`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/VM.java#L1332)), clear 5000 + refund 15000 ([`VM.java:1340`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/VM.java#L1340)), otherwise reset 5000 ([`VM.java:1345`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/VM.java#L1345)), so a no-op SSTORE costs 5000, not 2200's 800. |  |
 
 ## Muir Glacier
 
@@ -121,7 +121,7 @@ Meta: [EIP-7568](https://eips.ethereum.org/EIPS/eip-7568).
 |---|---|---|---|---|---|---|
 | [2565](https://eips.ethereum.org/EIPS/eip-2565) | ModExp Gas Cost | **No** |  |  | MODEXP keeps EIP-198 pricing (`GQUAD_DIVISOR = 20`). |  |
 | [2718](https://eips.ethereum.org/EIPS/eip-2718) | Typed Transaction Envelope | **No** |  |  | No typed txs in rskj. [RSKIP-543](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP543.md) Draft ([PR #708](https://github.com/rsksmart/RSKIPs/pull/708)). | Assumed active |
-| [2929](https://eips.ethereum.org/EIPS/eip-2929) | Gas cost increases for state access opcodes | **?** |  |  | **Unverified** (claimed No): Not adopted; project decision not to adopt (`readme.md` assumption 3). | Won't (project decision) |
+| [2929](https://eips.ethereum.org/EIPS/eip-2929) | Gas cost increases for state access opcodes | **No** |  |  | No warm/cold access tracking anywhere in rskj; flat SLOAD 200, CALL 700, BALANCE 400 ([`GasCost.java:52`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/GasCost.java#L52)). Project decision not to adopt (`readme.md` assumption 3). | Won't (project decision) |
 | [2930](https://eips.ethereum.org/EIPS/eip-2930) | Optional access lists | **No** |  |  | No access-list code in rskj. [RSKIP-546](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP546.md) ([PR #709](https://github.com/rsksmart/RSKIPs/pull/709), Draft) only specifies the access list's RLP shape. | Partial: RSKIP-546: access list RLP shape only; charged gas, no impact on execution. |
 
 ## London
@@ -132,7 +132,7 @@ Meta: [EIP-7568](https://eips.ethereum.org/EIPS/eip-7568).
 |---|---|---|---|---|---|---|
 | [1559](https://eips.ethereum.org/EIPS/eip-1559) | Fee market change for ETH 1.0 chain | **Partial (WIP)** |  |  | Partial through [RSKIP-546](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP546.md) ([PR #709](https://github.com/rsksmart/RSKIPs/pull/709), Draft): Type-2 encoding only; base fee effectively zero, no dynamic fee market. | Partial: Type-2 encoding, zero base fee |
 | [3198](https://eips.ethereum.org/EIPS/eip-3198) | BASEFEE opcode | **Yes** | Arrowhead | 6,223,700 | BASEFEE via [RSKIP-412](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP412.md) (Arrowhead) ([`VM.java:1950`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/VM.java#L1950)); returns the block's `minimumGasPrice` ([`VM.java:1101`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/VM.java#L1101)). |  |
-| [3529](https://eips.ethereum.org/EIPS/eip-3529) | Reduction in refunds | **?** |  |  | **Unverified** (claimed No): Pre-London refunds ([`GasCost.java:61`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/GasCost.java#L61): REFUND_SSTORE 15000, SUICIDE_REFUND 24000). |  |
+| [3529](https://eips.ethereum.org/EIPS/eip-3529) | Reduction in refunds | **No** |  |  | Pre-London refunds: SSTORE clear refund 15000 ([`GasCost.java:61`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/GasCost.java#L61); 3529: 4800), SELFDESTRUCT refund 24000 ([`TransactionExecutor.java:693`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/core/TransactionExecutor.java#L693); 3529: removed), refund cap gasUsed/2 ([`TransactionExecutor.java:696`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/core/TransactionExecutor.java#L696); 3529: /5). |  |
 | [3541](https://eips.ethereum.org/EIPS/eip-3541) | Reject new contract code starting with the 0xEF byte | **Yes** | Vetiver | 8,804,200 | [RSKIP-544](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP544.md) (Vetiver), on both paths: CREATE/CREATE2 ([`Program.java:712`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/program/Program.java#L712)) and contract-creation txs ([`TransactionExecutor.java:541`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/core/TransactionExecutor.java#L541)). |  |
 | [3554](https://eips.ethereum.org/EIPS/eip-3554) | Difficulty Bomb Delay to December 2021 | **N/A** |  |  | Ethereum difficulty-bomb schedule; Rootstock has no difficulty bomb. |  |
 
@@ -167,7 +167,7 @@ Meta: [EIP-7568](https://eips.ethereum.org/EIPS/eip-7568).
 
 | EIP | Title | RSK | RSK upgrade | Mainnet height | Evidence | Under assumptions |
 |---|---|---|---|---|---|---|
-| [3651](https://eips.ethereum.org/EIPS/eip-3651) | Warm COINBASE | **?** |  |  | **Unverified** (claimed No): Only meaningful with 2929. | Won't (needs 2929) |
+| [3651](https://eips.ethereum.org/EIPS/eip-3651) | Warm COINBASE | **No** |  |  | Nothing to warm: rskj has no warm/cold access tracking (see 2929). | Won't (needs 2929) |
 | [3855](https://eips.ethereum.org/EIPS/eip-3855) | PUSH0 instruction | **Yes** | Arrowhead | 6,223,700 | PUSH0 via [RSKIP-398](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP398.md) (Arrowhead) ([`VM.java:2064`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/VM.java#L2064)). |  |
 | [3860](https://eips.ethereum.org/EIPS/eip-3860) | Limit and meter initcode | **?** | Lovell | 7,338,024 | **Unverified** (claimed Yes): Initcode limit/metering via [RSKIP-438](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP438.md) (Lovell) (`MAX_INITCODE_SIZE`, [`Constants.java:56`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/config/Constants.java#L56)). |  |
 | [4895](https://eips.ethereum.org/EIPS/eip-4895) | Beacon chain push withdrawals as operations | **N/A** |  |  | Ethereum consensus layer / beacon chain; no Rootstock equivalent. |  |

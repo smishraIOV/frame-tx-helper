@@ -124,18 +124,23 @@ R = {
     1884: ("Partial", "Papyrus", f"Only SELFBALANCE, via {rskip(151, 'Papyrus')} ({code('org/ethereum/vm/VM.java', 1962)}); SLOAD/BALANCE/EXTCODEHASH repricing not adopted."),
     2028: ("Yes", "Arrowhead", f"Non-zero calldata byte costs 16 (was 68) via {rskip(400, 'Arrowhead')} "
            f"({code('org/ethereum/core/Transaction.java', 230)}, {code('org/ethereum/vm/GasCost.java', 80)})."),
-    2200: ("No", "", f"Flat SSTORE costs ({code('org/ethereum/vm/GasCost.java', 39)})."),
+    2200: ("No", "", f"Pre-Istanbul SSTORE with no original-value tracking: set 20000 ({code('org/ethereum/vm/VM.java', 1332)}), "
+           f"clear 5000 + refund 15000 ({code('org/ethereum/vm/VM.java', 1340)}), otherwise reset 5000 ({code('org/ethereum/vm/VM.java', 1345)}), "
+           "so a no-op SSTORE costs 5000, not 2200's 800."),
     # Muir Glacier
     2384: BOMB,
     # Berlin
     2565: ("No", "", f"MODEXP keeps EIP-198 pricing (`GQUAD_DIVISOR = 20`)."),
     2718: ("No", "", f"No typed txs in rskj. {rskip(543)} Draft ([PR #708]({PR_URL.format(708)})).", "Assumed active"),
-    2929: ("No", "", "Not adopted; project decision not to adopt (`readme.md` assumption 3).", "Won't (project decision)"),
+    2929: ("No", "", f"No warm/cold access tracking anywhere in rskj; flat SLOAD 200, CALL 700, BALANCE 400 ({code('org/ethereum/vm/GasCost.java', 52)}). "
+           "Project decision not to adopt (`readme.md` assumption 3).", "Won't (project decision)"),
     2930: ("No", "", f"No access-list code in rskj. {rskip(546)} ([PR #709]({PR_URL.format(709)}), Draft) only specifies the access list's RLP shape.", "Partial: RSKIP-546: access list RLP shape only; charged gas, no impact on execution."),
     # London
     1559: ("Partial (WIP)", "", f"Partial through {rskip(546)} ([PR #709]({PR_URL.format(709)}), Draft): Type-2 encoding only; base fee effectively zero, no dynamic fee market.", "Partial: Type-2 encoding, zero base fee"),
     3198: ("Yes", "Arrowhead", f"BASEFEE via {rskip(412, 'Arrowhead')} ({code('org/ethereum/vm/VM.java', 1950)}); returns the block's `minimumGasPrice` ({code('org/ethereum/vm/VM.java', 1101)})."),
-    3529: ("No", "", f"Pre-London refunds ({code('org/ethereum/vm/GasCost.java', 61)}: REFUND_SSTORE 15000, SUICIDE_REFUND 24000)."),
+    3529: ("No", "", f"Pre-London refunds: SSTORE clear refund 15000 ({code('org/ethereum/vm/GasCost.java', 61)}; 3529: 4800), "
+           f"SELFDESTRUCT refund 24000 ({code('org/ethereum/core/TransactionExecutor.java', 693)}; 3529: removed), "
+           f"refund cap gasUsed/2 ({code('org/ethereum/core/TransactionExecutor.java', 696)}; 3529: /5)."),
     3541: ("Yes", "Vetiver", f"{rskip(544, 'Vetiver')}, on both paths: CREATE/CREATE2 ({code('org/ethereum/vm/program/Program.java', 712)}) "
            f"and contract-creation txs ({code('org/ethereum/core/TransactionExecutor.java', 541)})."),
     3554: BOMB,
@@ -146,7 +151,7 @@ R = {
     3675: BEACON,
     4399: (N_A, "", f"Rootstock is merge-mined PoW; DIFFICULTY ({code('org/ethereum/vm/OpCode.java', 260)}) keeps its meaning."),
     # Shanghai
-    3651: ("No", "", "Only meaningful with 2929.", "Won't (needs 2929)"),
+    3651: ("No", "", "Nothing to warm: rskj has no warm/cold access tracking (see 2929).", "Won't (needs 2929)"),
     3855: ("Yes", "Arrowhead", f"PUSH0 via {rskip(398, 'Arrowhead')} ({code('org/ethereum/vm/VM.java', 2064)})."),
     3860: ("Yes", "Lovell", f"Initcode limit/metering via {rskip(438, 'Lovell')} (`MAX_INITCODE_SIZE`, {code('org/ethereum/config/Constants.java', 56)})."),
     4895: BEACON,
@@ -204,7 +209,7 @@ for n in (2780, 7708, 7778, 7928, 7954, 7976, 7981, 7997, 8037, 8038, 8246):
 
 
 # Rows whose evidence was taken on trust (a brief citation, not a rule-by-rule check): shown as "?" until validated.
-UNVERIFIED = {2200, 2929, 3529, 3651, 3860, 7823}
+UNVERIFIED = {3860, 7823}
 CLAIMED = {}
 for n in UNVERIFIED:
     st, up, ev, *rest = R[n]

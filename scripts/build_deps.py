@@ -33,15 +33,15 @@ RSK = {
     2681: ("No", "No consensus rule or RSKIP: nonces are `BigInteger` and block validation only checks equality (`BlockTxsValidationRule.java:89-91`); CREATE/CREATE2 has no nonce-cap check (`Program.java:472`). Only the tx pool (`TxPendingValidator.java:66`) and block-building sort (`PendingState.java:194`) reject nonces over 8 bytes, which still allows 2^64-1 (the EIP forbids it). Related: RSKIP-545 (PR #710) requires set-code authorization nonces < 2^64-1."),
     1052: ("Partial", "RSKIP-140 (Papyrus), fixed by RSKIP-169 (Iris): gas 400, 0 for non-existent accounts, empty-code hash for accounts without code (`MutableRepository.java:217-222`). Deviation: EIP-1052 returns 0 for EIP-161 *empty* accounts; RSK returns the empty-code hash. That matters because RSK does create empty accounts (161 rule c)."),
     1559: ("Partial (WIP)", "Partial through RSKIP-546 ([PR #709](https://github.com/rsksmart/RSKIPs/pull/709), Draft): Type-2 encoding only; base fee effectively zero, no dynamic fee market."),
-    2200: ("No", "Flat SSTORE costs in `GasCost.java`."),
+    2200: ("No", "Pre-Istanbul SSTORE with no original-value tracking: set 20000, clear 5000 + refund 15000, otherwise reset 5000 (`VM.java:1332-1345`); a no-op SSTORE costs 5000, not 2200's 800."),
     2718: ("No", "RSKIP-543 Typed Transaction Envelope: Draft."),
     2780: ("No", "No RSKIP."),
-    2929: ("No", "Not adopted; project decision not to adopt (assumption 3)."),
+    2929: ("No", "No warm/cold access tracking anywhere in rskj; flat SLOAD 200, CALL 700, BALANCE 400 (`GasCost.java:52-69`). Project decision not to adopt (assumption 3)."),
     2930: ("No", "No access-list code in rskj; needs 2718. RSKIP-546 (Draft) only specifies the access list's RLP shape."),
-    3529: ("No", "Pre-London refunds still in `GasCost.java` (REFUND_SSTORE 15000, SUICIDE_REFUND 24000)."),
+    3529: ("No", "Pre-London refunds: SSTORE clear refund 15000 (`GasCost.java:61`; 3529: 4800), SELFDESTRUCT refund 24000 (`TransactionExecutor.java:693`; 3529: removed), refund cap gasUsed/2 (`TransactionExecutor.java:696`; 3529: /5)."),
     3541: ("Yes", "RSKIP-544, Vetiver (block 8,804,200), on both paths: CREATE/CREATE2 (`Program.java:712`) and contract-creation txs (`TransactionExecutor.java:541`)."),
     3607: ("No", "No sender-code check: `TransactionExecutor.init()` (`TransactionExecutor.java:162`) checks initcode size, gas, nonce, balance and addresses only; the pool's `TxValidatorAccountStateValidator` only checks the sender exists and isn't deleted. RSKIP-545 (PR #710) says it isn't needed for 7702 on RSK."),
-    3651: ("No", "Needs 2929."),
+    3651: ("No", "Nothing to warm: rskj has no warm/cold access tracking (see 2929)."),
     4788: ("N/A", "Beacon-chain specific."),
     4844: ("No", "RSKIP-558 Blob Carrying Transactions: Draft."),
     4895: ("N/A", "Beacon-chain specific."),
@@ -63,7 +63,7 @@ RSK = {
 }
 
 # Rows whose evidence was taken on trust (a brief citation, not a rule-by-rule check): shown as "?" until validated.
-UNVERIFIED = {2200, 2929, 3529, 3651}
+UNVERIFIED = set()
 for _n in UNVERIFIED:
     _st, _ev = RSK[_n]
     RSK[_n] = ("?", f"**Unverified** (claimed {_st}): {_ev}")
@@ -234,7 +234,7 @@ w("  * @claude: blobs are not critical to frame transactions. For this project w
 w("  * → Applied as assumption 4: 4844 is If needed, 7594 is Not needed.")
 w("- **Beacon-chain items (4788, 4895, 7843 SLOTNUM)** don't map to Rootstock and need an RSK-specific substitute or exclusion.")
 w("- **Moving targets.** 8141 is Draft, and 2780, 7708, 7778, 7843, 7928, 7976, 7997, 8037, 8038 and 8246 are Last Call. Most are scheduled for Glamsterdam, so their specs may still change. SELFDESTRUCT is moving on both sides: RSKIP-701 on Rootstock and EIP-4758 on Ethereum (see 6780).")
-w("- **Still to verify:** 7997, plus 2200, 2929, 3529 and 3651, whose evidence was taken on trust; all marked `?` above. Resolved: 3607 (not adopted, not needed per RSKIP-545) and 161 (Partial: nonce rule only, checked rule by rule).")
+w("- **Still to verify:** 7997, marked `?` above. Resolved: 3607 (not adopted, not needed per RSKIP-545), 161 (Partial: nonce rule only, checked rule by rule), and 2200, 2929, 3529 and 3651 (checked against code).")
 
 out_path.write_text("\n".join(out) + "\n", encoding="utf-8")
 print("hard:", sorted(hard))
