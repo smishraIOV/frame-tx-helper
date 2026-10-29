@@ -172,7 +172,8 @@ R = {
            f"({code('co/rsk/validators/BlockTxsValidationRule.java', 89)}); CREATE/CREATE2 has no nonce-cap check ({code('org/ethereum/vm/program/Program.java', 472)}). "
            f"Only the tx pool ({code('co/rsk/net/handler/TxPendingValidator.java', 66)}) and block-building sort ({code('co/rsk/core/bc/PendingState.java', 194)}) "
            "reject nonces over 8 bytes, which still allows 2^64-1 (the EIP forbids it)."),
-    3607: ("No", "", f"rskj doesn't check sender code; {rskip(545)} notes this and doesn't need it.", "Not needed (RSKIP-545)"),
+    3607: ("No", "", f"No sender-code check in {code('org/ethereum/core/TransactionExecutor.java', 162, 'TransactionExecutor.init()')} "
+           f"or the pool's {code('co/rsk/net/handler/txvalidator/TxValidatorAccountStateValidator.java')}; {rskip(545)} notes this and doesn't need it.", "Not needed (RSKIP-545)"),
     7610: ("?", "", "Collision on non-empty storage: not checked."),
 }
 for n in (2780, 7708, 7778, 7928, 7954, 7976, 7981, 7997, 8037, 8038, 8246):

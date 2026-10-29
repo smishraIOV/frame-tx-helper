@@ -40,7 +40,7 @@ RSK = {
     2930: ("No", "Needs 2718/2929; RSKIP-546 (Draft) covers the Type-1 envelope."),
     3529: ("No", "Pre-London refunds still in `GasCost.java` (REFUND_SSTORE 15000, SUICIDE_REFUND 24000)."),
     3541: ("Yes", "RSKIP-544, Vetiver (block 8,804,200)."),
-    3607: ("No", "Not adopted; rskj doesn't check sender code. RSKIP-545 (PR #710) says it isn't needed for 7702 on RSK."),
+    3607: ("No", "No sender-code check: `TransactionExecutor.init()` (`TransactionExecutor.java:162`) checks initcode size, gas, nonce, balance and addresses only; the pool's `TxValidatorAccountStateValidator` only checks the sender exists and isn't deleted. RSKIP-545 (PR #710) says it isn't needed for 7702 on RSK."),
     3651: ("No", "Needs 2929."),
     4788: ("N/A", "Beacon-chain specific."),
     4844: ("No", "RSKIP-558 Blob Carrying Transactions: Draft."),
