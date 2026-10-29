@@ -52,7 +52,7 @@ RSK = {
     7708: ("No", "No RSKIP."),
     7778: ("No", "No RSKIP."),
     7819: ("No", "No RSKIP."),
-    7825: ("No", "Only a mempool sanity cap of 2^60 (`Constants.TRANSACTION_GAS_CAP`, `TxValidatorGasLimitValidator.java:40`) plus the block gas limit; 7825's consensus cap is 2^24."),
+    7825: ("No", "No consensus per-tx cap: execution only checks the tx against the remaining block gas (`TransactionExecutor.java:265`). The 2^60 `Constants.TRANSACTION_GAS_CAP` is used only by the pool (`TxValidatorGasLimitValidator.java:40`); 7825's cap is 2^24. RSKIP-144 sublist limits (Reed 8.1.0, not scheduled on mainnet) are a different rule."),
     7843: ("N/A?", "SLOTNUM is beacon-slot based; RSK would need an equivalent or a no-op."),
     7928: ("No", "No RSKIP."),
     7976: ("No", "No RSKIP."),

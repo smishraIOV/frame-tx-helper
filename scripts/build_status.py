@@ -155,7 +155,9 @@ R = {
     # Osaka
     7594: BLOBS,
     7823: ("No", "", "No RSKIP; MODEXP input bounds unchanged."),
-    7825: ("No", "", f"Only a 2^60 mempool sanity cap ({code('co/rsk/net/handler/txvalidator/TxValidatorGasLimitValidator.java', 40)}), not 7825's 2^24 consensus cap."),
+    7825: ("No", "", f"No consensus per-tx cap: execution only checks the tx against the remaining block gas ({code('org/ethereum/core/TransactionExecutor.java', 265)}). "
+           f"The 2^60 cap is pool-only ({code('co/rsk/net/handler/txvalidator/TxValidatorGasLimitValidator.java', 40)}); 7825's cap is 2^24. "
+           f"{rskip(144)} sublist limits (Reed 8.1.0, not scheduled on mainnet) are a different rule."),
     7883: ("No", "", "No RSKIP; MODEXP keeps EIP-198 pricing."),
     7917: BEACON,
     7918: BLOBS,
