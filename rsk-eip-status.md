@@ -15,7 +15,7 @@ Task 2 in `readme.md`: every Core EIP in each Ethereum hard fork, its Rootstock 
 | Spurious Dragon | 4 | 3 | 1 |  |  |  |  |  |
 | Byzantium | 9 | 7 |  |  | 1 |  | 1 |  |
 | Constantinople | 5 | 2 | 1 |  |  |  | 2 |  |
-| Istanbul | 6 | 2 | 1 |  |  |  |  | 3 |
+| Istanbul | 6 | 4 | 1 |  |  |  |  | 1 |
 | Muir Glacier | 1 |  |  |  |  |  | 1 |  |
 | Berlin | 4 |  |  |  |  | 3 |  | 1 |
 | London | 5 | 2 |  | 1 |  |  | 1 | 1 |
@@ -28,9 +28,9 @@ Task 2 in `readme.md`: every Core EIP in each Ethereum hard fork, its Rootstock 
 | Osaka (Fusaka) | 9 |  |  |  |  | 7 | 1 | 1 |
 | Amsterdam (Glamsterdam, scheduled) | 18 |  |  |  |  | 12 | 6 |  |
 | Retroactive | 4 |  | 1 |  |  | 2 |  | 1 |
-| **Total** | **93** | **21** | **5** | **1** | **1** | **32** | **24** | **9** |
+| **Total** | **93** | **23** | **5** | **1** | **1** | **32** | **24** | **7** |
 
-Of the 69 EIPs that apply to Rootstock, 21 are fully active, 6 are partial or adapted, 1 is partial only through Draft RSKIP work, 32 are missing, and 9 still need verifying. Rootstock tracks Ethereum's EVM opcode and precompile additions closely up to Cancun (except blobs), but appears to have skipped the gas-model changes since Berlin (2929, 2930, 3529, 2200, 1884 repricing; several still unverified) and has no typed transactions.
+Of the 69 EIPs that apply to Rootstock, 23 are fully active, 6 are partial or adapted, 1 is partial only through Draft RSKIP work, 32 are missing, and 7 still need verifying. Rootstock tracks Ethereum's EVM opcode and precompile additions closely up to Cancun (except blobs), but appears to have skipped the gas-model changes since Berlin (2929, 2930, 3529, 2200, 1884 repricing; several still unverified) and has no typed transactions.
 
 ## Homestead
 
@@ -99,10 +99,10 @@ Meta: [EIP-1679](https://eips.ethereum.org/EIPS/eip-1679).
 | EIP | Title | RSK | RSK upgrade | Mainnet height | Evidence | Under assumptions |
 |---|---|---|---|---|---|---|
 | [152](https://eips.ethereum.org/EIPS/eip-152) | Add BLAKE2 compression function `F` precompile | **Yes** | Iris | 3,614,800 | BLAKE2F via [RSKIP-153](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP153.md) (Iris); input validation tightened by [RSKIP-552](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP552.md) (Vetiver). |  |
-| [1108](https://eips.ethereum.org/EIPS/eip-1108) | Reduce alt_bn128 precompile gas costs | **?** | Papyrus | 2,392,700 | **Unverified** (claimed Yes): EIP-1108 prices (e.g. MUL 6000, [`BN128Multiplication.java:53`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/co/rsk/pcc/altBN128/BN128Multiplication.java#L53)), active with [RSKIP-137](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP137.md) (Papyrus). |  |
+| [1108](https://eips.ethereum.org/EIPS/eip-1108) | Reduce alt_bn128 precompile gas costs | **Yes** | Papyrus | 2,392,700 | All EIP-1108 prices, with no activation gate: ADD 150 ([`BN128Addition.java:53`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/co/rsk/pcc/altBN128/BN128Addition.java#L53)), MUL 6000 ([`BN128Multiplication.java:53`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/co/rsk/pcc/altBN128/BN128Multiplication.java#L53)), pairing 45000 + 34000/pair ([`BN128Pairing.java:58`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/co/rsk/pcc/altBN128/BN128Pairing.java#L58)). The precompiles only exist since [RSKIP-137](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP137.md) (Papyrus), so RSK never charged pre-1108 prices. |  |
 | [1344](https://eips.ethereum.org/EIPS/eip-1344) | ChainID opcode | **Yes** | Papyrus | 2,392,700 | CHAINID via [RSKIP-152](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP152.md) (Papyrus) ([`VM.java:1956`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/VM.java#L1956)). |  |
 | [1884](https://eips.ethereum.org/EIPS/eip-1884) | Repricing for trie-size-dependent opcodes | **Partial** | Papyrus | 2,392,700 | Only SELFBALANCE, via [RSKIP-151](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP151.md) (Papyrus) ([`VM.java:1962`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/VM.java#L1962)); SLOAD/BALANCE/EXTCODEHASH repricing not adopted. |  |
-| [2028](https://eips.ethereum.org/EIPS/eip-2028) | Transaction data gas cost reduction | **?** | Arrowhead | 6,223,700 | **Unverified** (claimed Yes): Calldata 16 gas/non-zero byte via [RSKIP-400](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP400.md) (Arrowhead). |  |
+| [2028](https://eips.ethereum.org/EIPS/eip-2028) | Transaction data gas cost reduction | **Yes** | Arrowhead | 6,223,700 | Non-zero calldata byte costs 16 (was 68) via [RSKIP-400](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP400.md) (Arrowhead) ([`Transaction.java:230`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/core/Transaction.java#L230), [`GasCost.java:80`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/GasCost.java#L80)). |  |
 | [2200](https://eips.ethereum.org/EIPS/eip-2200) | Structured Definitions for Net Gas Metering | **?** |  |  | **Unverified** (claimed No): Flat SSTORE costs ([`GasCost.java:39`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/GasCost.java#L39)). |  |
 
 ## Muir Glacier
@@ -262,9 +262,9 @@ Rules Ethereum applies from genesis, not tied to one upgrade.
 | Genesis | 0 | 7, 100, 140, 150, 155, 160, 170, 198, 658 |
 | Orchid | 729,000 | 214 |
 | Wasabi | 1,591,000 | 145, 161, 684, 1014 |
-| Papyrus | 2,392,700 | 196, 197, 1108?, 1344, 1884 |
+| Papyrus | 2,392,700 | 196, 197, 1108, 1344, 1884 |
 | Iris | 3,614,800 | 152, 211, 1052 |
-| Arrowhead | 6,223,700 | 2028?, 3198, 3855 |
+| Arrowhead | 6,223,700 | 2028, 3198, 3855 |
 | Lovell | 7,338,024 | 2, 1153, 3860?, 5656 |
 | Vetiver | 8,804,200 | 3541 |
 

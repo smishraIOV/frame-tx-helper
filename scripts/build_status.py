@@ -117,10 +117,13 @@ R = {
     1283: (N_A, "", "Reverted in Ethereum by Petersburg before activation."),
     # Istanbul
     152: ("Yes", "Iris", f"BLAKE2F via {rskip(153, 'Iris')}; input validation tightened by {rskip(552, 'Vetiver')}."),
-    1108: ("Yes", "Papyrus", f"EIP-1108 prices (e.g. MUL 6000, {code('co/rsk/pcc/altBN128/BN128Multiplication.java', 53)}), active with {rskip(137, 'Papyrus')}."),
+    1108: ("Yes", "Papyrus", f"All EIP-1108 prices, with no activation gate: ADD 150 ({code('co/rsk/pcc/altBN128/BN128Addition.java', 53)}), "
+           f"MUL 6000 ({code('co/rsk/pcc/altBN128/BN128Multiplication.java', 53)}), pairing 45000 + 34000/pair "
+           f"({code('co/rsk/pcc/altBN128/BN128Pairing.java', 58)}). The precompiles only exist since {rskip(137, 'Papyrus')}, so RSK never charged pre-1108 prices."),
     1344: ("Yes", "Papyrus", f"CHAINID via {rskip(152, 'Papyrus')} ({code('org/ethereum/vm/VM.java', 1956)})."),
     1884: ("Partial", "Papyrus", f"Only SELFBALANCE, via {rskip(151, 'Papyrus')} ({code('org/ethereum/vm/VM.java', 1962)}); SLOAD/BALANCE/EXTCODEHASH repricing not adopted."),
-    2028: ("Yes", "Arrowhead", f"Calldata 16 gas/non-zero byte via {rskip(400, 'Arrowhead')}."),
+    2028: ("Yes", "Arrowhead", f"Non-zero calldata byte costs 16 (was 68) via {rskip(400, 'Arrowhead')} "
+           f"({code('org/ethereum/core/Transaction.java', 230)}, {code('org/ethereum/vm/GasCost.java', 80)})."),
     2200: ("No", "", f"Flat SSTORE costs ({code('org/ethereum/vm/GasCost.java', 39)})."),
     # Muir Glacier
     2384: BOMB,
@@ -201,7 +204,7 @@ for n in (2780, 7708, 7778, 7928, 7954, 7976, 7981, 7997, 8037, 8038, 8246):
 
 
 # Rows whose evidence was taken on trust (a brief citation, not a rule-by-rule check): shown as "?" until validated.
-UNVERIFIED = {1108, 2028, 2200, 2929, 3529, 3651, 3860, 7823}
+UNVERIFIED = {2200, 2929, 3529, 3651, 3860, 7823}
 CLAIMED = {}
 for n in UNVERIFIED:
     st, up, ev, *rest = R[n]
