@@ -30,14 +30,14 @@ RSK = {
     2: ("Yes", "Complete since Lovell. (1) 53000 gas for contract-creation txs and (2) low-s signatures (`Transaction.java:321`) from genesis; (3) failed code deposit leaves no empty contract: top-level creates from genesis (`TransactionExecutor` rollback), internal CREATE/CREATE2 only since RSKIP-453 (Lovell, block 7,338,024; `Program.java:738`). (4) Difficulty formula: N/A, RSK uses its own."),
     161: ("Partial", "Only rule (a), and only for CREATE/CREATE2: new contracts start at nonce 1 since RSKIP-125 (Wasabi; `Program.java:592`); contract-creation txs still start at 0 (`TransactionExecutor.java:403`). (b) 25000 new-account gas is charged even for zero value (`VM.java:1734`, `:1797`). (c) A zero-value transfer creates an empty account (`MutableRepository.java:322`). (d) No end-of-tx deletion of touched empty accounts; only SUICIDE deletions (`TransactionExecutor.java:622`)."),
     684: ("Partial", "CREATE/CREATE2 only, since RSKIP-125 (Wasabi): fails on an address with code or non-zero nonce (`Program.java:572`) or deleted earlier in the block (`:543`). Contract-creation txs have no collision check: the account is re-created, keeping only its balance (RSKIP-174; `TransactionExecutor.java:403`). A collision there would need a hash collision, so the gap is theoretical."),
-    2681: ("No", "No consensus rule or RSKIP: nonces are `BigInteger` and block validation only checks equality (`BlockTxsValidationRule.java:89-91`); CREATE/CREATE2 has no nonce-cap check (`Program.java:472`). Only the tx pool (`TxPendingValidator.java:66`) and block-building sort (`PendingState.java:194`) reject nonces over 8 bytes, which still allows 2^64-1 (the EIP forbids it)."),
+    2681: ("No", "No consensus rule or RSKIP: nonces are `BigInteger` and block validation only checks equality (`BlockTxsValidationRule.java:89-91`); CREATE/CREATE2 has no nonce-cap check (`Program.java:472`). Only the tx pool (`TxPendingValidator.java:66`) and block-building sort (`PendingState.java:194`) reject nonces over 8 bytes, which still allows 2^64-1 (the EIP forbids it). Related: RSKIP-545 (PR #710) requires set-code authorization nonces < 2^64-1."),
     1052: ("Partial", "RSKIP-140 (Papyrus), fixed by RSKIP-169 (Iris): gas 400, 0 for non-existent accounts, empty-code hash for accounts without code (`MutableRepository.java:217-222`). Deviation: EIP-1052 returns 0 for EIP-161 *empty* accounts; RSK returns the empty-code hash. That matters because RSK does create empty accounts (161 rule c)."),
-    1559: ("Partial", "No 1559 fee market or Type-2 tx. Closest analogue since genesis: a consensus-enforced block floor, header `minimumGasPrice` (`BlockHeader.java:127`). Every tx must pay at least it (`TxsMinGasPriceRule`), and it can only move a bounded step from the parent (`PrevMinGasPriceRule`). It's miner-voted, not burnt, with no gas-target elasticity. BASEFEE (EIP-3198, RSKIP-412) returns it (`VM.java:1101`). RSKIP-546 (Type 1/2) is Draft."),
+    1559: ("Partial", "Partial through RSKIP-546 ([PR #709](https://github.com/rsksmart/RSKIPs/pull/709), Draft): Type-2 encoding only; base fee effectively zero, no dynamic fee market."),
     2200: ("No", "Flat SSTORE costs in `GasCost.java`."),
     2718: ("No", "RSKIP-543 Typed Transaction Envelope: Draft."),
     2780: ("No", "No RSKIP."),
     2929: ("No", "Not adopted; see RSKIP-239 (Reprice Trie Read Opcodes, cites 2929)."),
-    2930: ("No", "No access-list code anywhere in rskj; needs 2718. RSKIP-546 (Draft) covers the Type-1 envelope."),
+    2930: ("No", "No access-list code in rskj; needs 2718. RSKIP-546 (Draft) only specifies the access list's RLP shape."),
     3529: ("No", "Pre-London refunds still in `GasCost.java` (REFUND_SSTORE 15000, SUICIDE_REFUND 24000)."),
     3541: ("Yes", "RSKIP-544, Vetiver (block 8,804,200), on both paths: CREATE/CREATE2 (`Program.java:712`) and contract-creation txs (`TransactionExecutor.java:541`)."),
     3607: ("No", "No sender-code check: `TransactionExecutor.init()` (`TransactionExecutor.java:162`) checks initcode size, gas, nonce, balance and addresses only; the pool's `TxValidatorAccountStateValidator` only checks the sender exists and isn't deleted. RSKIP-545 (PR #710) says it isn't needed for 7702 on RSK."),
@@ -45,7 +45,7 @@ RSK = {
     4788: ("N/A", "Beacon-chain specific."),
     4844: ("No", "RSKIP-558 Blob Carrying Transactions: Draft."),
     4895: ("N/A", "Beacon-chain specific."),
-    6780: ("No", "Pre-Cancun SELFDESTRUCT: `Program.suicide` always deletes the account (`Program.java:434`), with no same-tx check; balance is burnt when the beneficiary is the contract itself (`:428`); SUICIDE_REFUND still paid (`TransactionExecutor.java:693`). No RSKIP."),
+    6780: ("No", "Pre-Cancun SELFDESTRUCT: `Program.suicide` always deletes the account (`Program.java:434`), with no same-tx check; balance is burnt when the beneficiary is the contract itself (`:428`); SUICIDE_REFUND still paid (`TransactionExecutor.java:693`). No RSKIP. **Watch:** RSKIP-701 ([PR #701](https://github.com/rsksmart/RSKIPs/pull/701), Draft) is proposed for Cardamom with 543/545/546 (RSKIP-694). It keeps RSKIP-545 delegated accounts and nonces on SELFDESTRUCT, diverging further from 6780. On Ethereum, EIP-4758 (Stagnant) would make SELFDESTRUCT balance-only."),
     7594: ("No", "PeerDAS; only referenced by RSKIP-558 (Draft). No blobs on RSK."),
     7623: ("No", "No RSKIP."),
     7702: ("No", "RSKIP-545 Set Code for EOAs: Draft."),
@@ -228,7 +228,7 @@ w("- **Blob dependencies.** 4844 and 7594 are in `requires` mainly for BLOBHASH 
 w("  * @claude: blobs are not critical to frame transactions. For this project we can assume that if needed, eip-4844 can be activated on Rootstock (RSKIP-558)")
 w("  * → Applied as assumption 4: 4844 is If needed, 7594 is Not needed.")
 w("- **Beacon-chain items (4788, 4895, 7843 SLOTNUM)** don't map to Rootstock and need an RSK-specific substitute or exclusion.")
-w("- **Moving targets.** 8141 is Draft, and 2780, 7708, 7778, 7843, 7928, 7976, 7997, 8037, 8038 and 8246 are Last Call. Most are scheduled for Glamsterdam, so their specs may still change.")
+w("- **Moving targets.** 8141 is Draft, and 2780, 7708, 7778, 7843, 7928, 7976, 7997, 8037, 8038 and 8246 are Last Call. Most are scheduled for Glamsterdam, so their specs may still change. SELFDESTRUCT is moving on both sides: RSKIP-701 on Rootstock and EIP-4758 on Ethereum (see 6780).")
 w("- **Still to verify:** 7997, marked `?` above. Resolved: 3607 (not adopted, not needed per RSKIP-545) and 161 (Partial: nonce rule only, checked rule by rule).")
 
 out_path.write_text("\n".join(out) + "\n", encoding="utf-8")

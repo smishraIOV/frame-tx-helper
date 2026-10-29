@@ -119,13 +119,9 @@ R = {
     2565: ("No", "", f"MODEXP keeps EIP-198 pricing (`GQUAD_DIVISOR = 20`)."),
     2718: ("No", "", f"No typed txs in rskj. {rskip(543)} Draft ([PR #708]({PR_URL.format(708)})).", "Assumed active"),
     2929: ("No", "", f"Not adopted; see {rskip(239)} (Reprice Trie Read Opcodes).", "Won't (project decision)"),
-    2930: ("No", "", f"No access-list code in rskj. {rskip(546)} Draft ([PR #709]({PR_URL.format(709)})): encoding plus access-list gas only.", "Partial: encoding only"),
+    2930: ("No", "", f"No access-list code in rskj. {rskip(546)} ([PR #709]({PR_URL.format(709)}), Draft) only specifies the access list's RLP shape.", "Partial: encoding only"),
     # London
-    1559: ("Partial", "Genesis", f"No 1559 fee market or Type-2 tx. Closest analogue since genesis: a consensus-enforced block floor, header `minimumGasPrice` "
-           f"({code('org/ethereum/core/BlockHeader.java', 127)}). Every tx must pay at least it ({code('co/rsk/validators/TxsMinGasPriceRule.java', 33, 'TxsMinGasPriceRule')}), "
-           f"and it can only move a bounded step from the parent ({code('co/rsk/validators/PrevMinGasPriceRule.java', 31, 'PrevMinGasPriceRule')}). "
-           f"It's miner-voted, not burnt, with no gas-target elasticity. BASEFEE (EIP-3198) returns it ({code('org/ethereum/vm/VM.java', 1101)}). "
-           f"Type-2 encoding in {rskip(546)} Draft.", "Partial: Type-2 encoding, zero base fee"),
+    1559: ("Partial", "", f"Partial through {rskip(546)} ([PR #709]({PR_URL.format(709)}), Draft): Type-2 encoding only; base fee effectively zero, no dynamic fee market.", "Partial: Type-2 encoding, zero base fee"),
     3198: ("Yes", "Arrowhead", f"BASEFEE via {rskip(412, 'Arrowhead')} ({code('org/ethereum/vm/VM.java', 1950)}); returns the block's `minimumGasPrice` ({code('org/ethereum/vm/VM.java', 1101)})."),
     3529: ("No", "", f"Pre-London refunds ({code('org/ethereum/vm/GasCost.java', 61)}: REFUND_SSTORE 15000, SUICIDE_REFUND 24000)."),
     3541: ("Yes", "Vetiver", f"{rskip(544, 'Vetiver')}, on both paths: CREATE/CREATE2 ({code('org/ethereum/vm/program/Program.java', 712)}) "
@@ -150,7 +146,10 @@ R = {
     5656: ("Yes", "Lovell", f"MCOPY via {rskip(445, 'Lovell')} ({code('org/ethereum/vm/VM.java', 2107)})."),
     6780: ("No", "", f"Pre-Cancun SELFDESTRUCT: always deletes the account, with no same-tx check ({code('org/ethereum/vm/program/Program.java', 434)}); "
            f"burns the balance when the beneficiary is the contract itself ({code('org/ethereum/vm/program/Program.java', 428)}); "
-           f"SUICIDE_REFUND still paid ({code('org/ethereum/core/TransactionExecutor.java', 693)}). No RSKIP."),
+           f"SUICIDE_REFUND still paid ({code('org/ethereum/core/TransactionExecutor.java', 693)}). No RSKIP. "
+           f"**Watch:** {rskip(701)} ([PR #701]({PR_URL.format(701)}), Draft) is proposed for Cardamom with 543/545/546 ({rskip(694)}). "
+           "It keeps RSKIP-545 delegated accounts and nonces on SELFDESTRUCT, diverging further from 6780. "
+           "On Ethereum, [EIP-4758](https://eips.ethereum.org/EIPS/eip-4758) (Stagnant) would make SELFDESTRUCT balance-only."),
     7516: BLOBS,
     # Prague
     2537: ("No", "", f"{rskip(188)} (BLS12-381 precompiles) Withdrawn."),
@@ -183,7 +182,7 @@ R = {
     2681: ("No", "", f"No consensus rule or RSKIP: nonces are `BigInteger` and block validation only checks equality "
            f"({code('co/rsk/validators/BlockTxsValidationRule.java', 89)}); CREATE/CREATE2 has no nonce-cap check ({code('org/ethereum/vm/program/Program.java', 472)}). "
            f"Only the tx pool ({code('co/rsk/net/handler/TxPendingValidator.java', 66)}) and block-building sort ({code('co/rsk/core/bc/PendingState.java', 194)}) "
-           "reject nonces over 8 bytes, which still allows 2^64-1 (the EIP forbids it)."),
+           f"reject nonces over 8 bytes, which still allows 2^64-1 (the EIP forbids it). Related: {rskip(545)} requires set-code authorization nonces < 2^64-1."),
     3607: ("No", "", f"No sender-code check in {code('org/ethereum/core/TransactionExecutor.java', 162, 'TransactionExecutor.init()')} "
            f"or the pool's {code('co/rsk/net/handler/txvalidator/TxValidatorAccountStateValidator.java')}; {rskip(545)} notes this and doesn't need it.", "Not needed (RSKIP-545)"),
     7610: ("?", "", "Collision on non-empty storage: not checked."),
