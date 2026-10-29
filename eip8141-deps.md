@@ -40,12 +40,12 @@ Decided 2026-10-27 (see the notes under Observations). The `Under assumptions` c
 | 1 | [7997](https://eips.ethereum.org/EIPS/eip-7997) | Deterministic Factory Contract | soft | Last Call ⚠ | Glamsterdam (scheduled) | 8141 (body) | **?** | No RSKIP; check whether an equivalent factory is deployed on RSK. | same |
 | 2 | [2](https://eips.ethereum.org/EIPS/eip-2) | Homestead Hard-fork Changes | hard + cited | Final | Homestead | 7702 | **Yes** | Complete since Lovell. (1) 53000 gas for contract-creation txs and (2) low-s signatures (`Transaction.java:321`) from genesis; (3) failed code deposit leaves no empty contract: top-level creates from genesis (`TransactionExecutor` rollback), internal CREATE/CREATE2 only since RSKIP-453 (Lovell, block 7,338,024; `Program.java:738`). (4) Difficulty formula: N/A, RSK uses its own. | same |
 | 2 | [161](https://eips.ethereum.org/EIPS/eip-161) | State trie clearing (invariant-preserving alternative) | hard | Final | Spurious Dragon | 1052, 7702, 8037, 8246 | **Partial** | Only rule (a), and only for CREATE/CREATE2: new contracts start at nonce 1 since RSKIP-125 (Wasabi; `Program.java:592`); contract-creation txs still start at 0 (`TransactionExecutor.java:403`). (b) 25000 new-account gas is charged even for zero value (`VM.java:1734`, `:1797`). (c) A zero-value transfer creates an empty account (`MutableRepository.java:322`). (d) No end-of-tx deletion of touched empty accounts; only SUICIDE deletions (`TransactionExecutor.java:622`). | same |
-| 2 | [684](https://eips.ethereum.org/EIPS/eip-684) | Revert creation in case of collision | hard | Final | Retroactive (all forks) | 8037 | **Yes** | `Program.java:547` `addressCollisionException`. | same |
-| 2 | [1052](https://eips.ethereum.org/EIPS/eip-1052) | EXTCODEHASH opcode | hard | Final | Constantinople | 7702 | **Yes** | RSKIP-140 (Papyrus), fixed by RSKIP-169 (Iris). | same |
+| 2 | [684](https://eips.ethereum.org/EIPS/eip-684) | Revert creation in case of collision | hard | Final | Retroactive (all forks) | 8037 | **Partial** | CREATE/CREATE2 only, since RSKIP-125 (Wasabi): fails on an address with code or non-zero nonce (`Program.java:572`) or deleted earlier in the block (`:543`). Contract-creation txs have no collision check: the account is re-created, keeping only its balance (RSKIP-174; `TransactionExecutor.java:403`). A collision there would need a hash collision, so the gap is theoretical. | same |
+| 2 | [1052](https://eips.ethereum.org/EIPS/eip-1052) | EXTCODEHASH opcode | hard | Final | Constantinople | 7702 | **Partial** | RSKIP-140 (Papyrus), fixed by RSKIP-169 (Iris): gas 400, 0 for non-existent accounts, empty-code hash for accounts without code (`MutableRepository.java:217-222`). Deviation: EIP-1052 returns 0 for EIP-161 *empty* accounts; RSK returns the empty-code hash. That matters because RSK does create empty accounts (161 rule c). | same |
 | 2 | [2200](https://eips.ethereum.org/EIPS/eip-2200) | Structured Definitions for Net Gas Metering | hard | Final | Istanbul | 3529 | **No** | Flat SSTORE costs in `GasCost.java`. | same |
 | 2 | [2929](https://eips.ethereum.org/EIPS/eip-2929) | Gas cost increases for state access opcodes | hard + cited | Final | Berlin | 2780, 2930, 3529, 6780, 7702 | **No** | Not adopted; see RSKIP-239 (Reprice Trie Read Opcodes, cites 2929). | **Won't**: Project decision: 2929 gas differences not implemented; 8141 gas defined with RSK rationale. |
 | 2 | [2930](https://eips.ethereum.org/EIPS/eip-2930) | Optional access lists | hard | Final | Berlin | 1559, 2780, 3529, 4844, 7702 | **No** | No access-list code anywhere in rskj; needs 2718. RSKIP-546 (Draft) covers the Type-1 envelope. | **Partial**: Type-1 encoding and access-list gas via RSKIP-546; the access list has no effect on execution (no 2929). |
-| 2 | [3541](https://eips.ethereum.org/EIPS/eip-3541) | Reject new contract code starting with the 0xEF byte | hard | Final | London | 7702 | **Yes** | RSKIP-544, Vetiver (block 8,804,200). | same |
+| 2 | [3541](https://eips.ethereum.org/EIPS/eip-3541) | Reject new contract code starting with the 0xEF byte | hard | Final | London | 7702 | **Yes** | RSKIP-544, Vetiver (block 8,804,200), on both paths: CREATE/CREATE2 (`Program.java:712`) and contract-creation txs (`TransactionExecutor.java:541`). | same |
 | 2 | [4788](https://eips.ethereum.org/EIPS/eip-4788) | Beacon block root in the EVM | hard | Final | Cancun | 7708 | **N/A** | Beacon-chain specific. | same |
 | 2 | [4895](https://eips.ethereum.org/EIPS/eip-4895) | Beacon chain push withdrawals as operations | hard | Final | Shanghai | 4844 | **N/A** | Beacon-chain specific. | same |
 | 2 | [6780](https://eips.ethereum.org/EIPS/eip-6780) | SELFDESTRUCT only in same transaction | hard + cited | Final | Cancun | 2780, 7708, 8037, 8246 | **No** | Pre-Cancun SELFDESTRUCT: `Program.suicide` always deletes the account (`Program.java:434`), with no same-tx check; balance is burnt when the beneficiary is the contract itself (`:428`); SUICIDE_REFUND still paid (`TransactionExecutor.java:693`). No RSKIP. | same |
@@ -81,8 +81,8 @@ graph LR
   E7997["7997<br/>Deterministic Factory Contra<br/><i>RSK: ?</i>"]
   E2["2<br/>Homestead Hard-fork Changes<br/><i>RSK: Yes</i>"]
   E161["161<br/>State trie clearing (invaria<br/><i>RSK: Partial</i>"]
-  E684["684<br/>Revert creation in case of c<br/><i>RSK: Yes</i>"]
-  E1052["1052<br/>EXTCODEHASH opcode<br/><i>RSK: Yes</i>"]
+  E684["684<br/>Revert creation in case of c<br/><i>RSK: Partial</i>"]
+  E1052["1052<br/>EXTCODEHASH opcode<br/><i>RSK: Partial</i>"]
   E2200["2200<br/>Structured Definitions for N<br/><i>RSK: No</i>"]
   E2929["2929<br/>Gas cost increases for state<br/><i>RSK: No</i>"]
   E2930["2930<br/>Optional access lists<br/><i>RSK: No</i>"]
@@ -195,8 +195,8 @@ graph LR
   class E7997 other
   class E2 yes
   class E161 partial
-  class E684 yes
-  class E1052 yes
+  class E684 partial
+  class E1052 partial
   class E2200 no
   class E2929 no
   class E2930 no
@@ -216,15 +216,15 @@ Solid arrows = `requires`; dashed = cited in the body only. Each box shows its R
 ## What's missing on Rootstock
 
 - **Direct requirements (depth 1), 13:** [1559](https://eips.ethereum.org/EIPS/eip-1559) (Partial), [2718](https://eips.ethereum.org/EIPS/eip-2718) (No), [2780](https://eips.ethereum.org/EIPS/eip-2780) (No), [3529](https://eips.ethereum.org/EIPS/eip-3529) (No), [3607](https://eips.ethereum.org/EIPS/eip-3607) (No), [4844](https://eips.ethereum.org/EIPS/eip-4844) (No), [7594](https://eips.ethereum.org/EIPS/eip-7594) (No), [7702](https://eips.ethereum.org/EIPS/eip-7702) (No), [7708](https://eips.ethereum.org/EIPS/eip-7708) (No), [7778](https://eips.ethereum.org/EIPS/eip-7778) (No), [7825](https://eips.ethereum.org/EIPS/eip-7825) (No), [7976](https://eips.ethereum.org/EIPS/eip-7976) (No), [8037](https://eips.ethereum.org/EIPS/eip-8037) (No).
-- **Transitive (depth 2–3), 10:** [161](https://eips.ethereum.org/EIPS/eip-161) (Partial), [2200](https://eips.ethereum.org/EIPS/eip-2200) (No), [2929](https://eips.ethereum.org/EIPS/eip-2929) (No), [2930](https://eips.ethereum.org/EIPS/eip-2930) (No), [6780](https://eips.ethereum.org/EIPS/eip-6780) (No), [7623](https://eips.ethereum.org/EIPS/eip-7623) (No), [7928](https://eips.ethereum.org/EIPS/eip-7928) (No), [8038](https://eips.ethereum.org/EIPS/eip-8038) (No), [8246](https://eips.ethereum.org/EIPS/eip-8246) (No), [2681](https://eips.ethereum.org/EIPS/eip-2681) (No).
+- **Transitive (depth 2–3), 12:** [161](https://eips.ethereum.org/EIPS/eip-161) (Partial), [684](https://eips.ethereum.org/EIPS/eip-684) (Partial), [1052](https://eips.ethereum.org/EIPS/eip-1052) (Partial), [2200](https://eips.ethereum.org/EIPS/eip-2200) (No), [2929](https://eips.ethereum.org/EIPS/eip-2929) (No), [2930](https://eips.ethereum.org/EIPS/eip-2930) (No), [6780](https://eips.ethereum.org/EIPS/eip-6780) (No), [7623](https://eips.ethereum.org/EIPS/eip-7623) (No), [7928](https://eips.ethereum.org/EIPS/eip-7928) (No), [8038](https://eips.ethereum.org/EIPS/eip-8038) (No), [8246](https://eips.ethereum.org/EIPS/eip-8246) (No), [2681](https://eips.ethereum.org/EIPS/eip-2681) (No).
 - **Soft (cited only), 3:** [3651](https://eips.ethereum.org/EIPS/eip-3651) (No), [7819](https://eips.ethereum.org/EIPS/eip-7819) (No), [7997](https://eips.ethereum.org/EIPS/eip-7997) (?).
-- **Already on RSK:** [2](https://eips.ethereum.org/EIPS/eip-2), [684](https://eips.ethereum.org/EIPS/eip-684), [1052](https://eips.ethereum.org/EIPS/eip-1052), [3541](https://eips.ethereum.org/EIPS/eip-3541).
+- **Already on RSK:** [2](https://eips.ethereum.org/EIPS/eip-2), [3541](https://eips.ethereum.org/EIPS/eip-3541).
 
 ### Remaining work under the project assumptions
 
-After applying the assumptions, **18** EIPs still need an RSK decision or an RSKIP, and **2** are unverified or need a substitute.
+After applying the assumptions, **20** EIPs still need an RSK decision or an RSKIP, and **2** are unverified or need a substitute.
 
-- **Needs a decision or RSKIP:** [1559](https://eips.ethereum.org/EIPS/eip-1559) (Partial), [2780](https://eips.ethereum.org/EIPS/eip-2780) (No), [3529](https://eips.ethereum.org/EIPS/eip-3529) (No), [7708](https://eips.ethereum.org/EIPS/eip-7708) (No), [7778](https://eips.ethereum.org/EIPS/eip-7778) (No), [7825](https://eips.ethereum.org/EIPS/eip-7825) (No), [7976](https://eips.ethereum.org/EIPS/eip-7976) (No), [8037](https://eips.ethereum.org/EIPS/eip-8037) (No), [7819](https://eips.ethereum.org/EIPS/eip-7819) (No), [161](https://eips.ethereum.org/EIPS/eip-161) (Partial), [2200](https://eips.ethereum.org/EIPS/eip-2200) (No), [2930](https://eips.ethereum.org/EIPS/eip-2930) (Partial), [6780](https://eips.ethereum.org/EIPS/eip-6780) (No), [7623](https://eips.ethereum.org/EIPS/eip-7623) (No), [7928](https://eips.ethereum.org/EIPS/eip-7928) (No), [8038](https://eips.ethereum.org/EIPS/eip-8038) (Replace), [8246](https://eips.ethereum.org/EIPS/eip-8246) (No), [2681](https://eips.ethereum.org/EIPS/eip-2681) (No).
+- **Needs a decision or RSKIP:** [1559](https://eips.ethereum.org/EIPS/eip-1559) (Partial), [2780](https://eips.ethereum.org/EIPS/eip-2780) (No), [3529](https://eips.ethereum.org/EIPS/eip-3529) (No), [7708](https://eips.ethereum.org/EIPS/eip-7708) (No), [7778](https://eips.ethereum.org/EIPS/eip-7778) (No), [7825](https://eips.ethereum.org/EIPS/eip-7825) (No), [7976](https://eips.ethereum.org/EIPS/eip-7976) (No), [8037](https://eips.ethereum.org/EIPS/eip-8037) (No), [7819](https://eips.ethereum.org/EIPS/eip-7819) (No), [161](https://eips.ethereum.org/EIPS/eip-161) (Partial), [684](https://eips.ethereum.org/EIPS/eip-684) (Partial), [1052](https://eips.ethereum.org/EIPS/eip-1052) (Partial), [2200](https://eips.ethereum.org/EIPS/eip-2200) (No), [2930](https://eips.ethereum.org/EIPS/eip-2930) (Partial), [6780](https://eips.ethereum.org/EIPS/eip-6780) (No), [7623](https://eips.ethereum.org/EIPS/eip-7623) (No), [7928](https://eips.ethereum.org/EIPS/eip-7928) (No), [8038](https://eips.ethereum.org/EIPS/eip-8038) (Replace), [8246](https://eips.ethereum.org/EIPS/eip-8246) (No), [2681](https://eips.ethereum.org/EIPS/eip-2681) (No).
 - **Unverified or needs a substitute:** [7843](https://eips.ethereum.org/EIPS/eip-7843) (N/A?), [7997](https://eips.ethereum.org/EIPS/eip-7997) (?).
 
 ### Observations

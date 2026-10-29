@@ -14,7 +14,7 @@ Task 2 in `readme.md`: every Core EIP in each Ethereum hard fork, its Rootstock 
 | Tangerine Whistle | 1 | 1 |  |  |  |  |  |
 | Spurious Dragon | 4 | 3 | 1 |  |  |  |  |
 | Byzantium | 9 | 7 |  | 1 |  | 1 |  |
-| Constantinople | 5 | 3 |  |  |  | 2 |  |
+| Constantinople | 5 | 2 | 1 |  |  | 2 |  |
 | Istanbul | 6 | 4 | 1 |  | 1 |  |  |
 | Muir Glacier | 1 |  |  |  |  | 1 |  |
 | Berlin | 4 |  |  |  | 4 |  |  |
@@ -27,10 +27,10 @@ Task 2 in `readme.md`: every Core EIP in each Ethereum hard fork, its Rootstock 
 | Prague (Pectra) | 10 |  |  |  | 5 | 5 |  |
 | Osaka (Fusaka) | 9 |  |  |  | 8 | 1 |  |
 | Amsterdam (Glamsterdam, scheduled) | 18 |  |  |  | 12 | 6 |  |
-| Retroactive | 4 | 1 |  |  | 2 |  | 1 |
-| **Total** | **93** | **27** | **3** | **1** | **37** | **24** | **1** |
+| Retroactive | 4 |  | 1 |  | 2 |  | 1 |
+| **Total** | **93** | **25** | **5** | **1** | **37** | **24** | **1** |
 
-Of the 69 EIPs that apply to Rootstock, 27 are fully active, 4 are partial or adapted, 37 are missing, and 1 still needs verifying. Rootstock tracks Ethereum's EVM opcode and precompile additions closely up to Cancun (except blobs), but skipped every gas-model change since Berlin (2929, 2930, 3529, 2200, 1884 repricing) and has no typed transactions.
+Of the 69 EIPs that apply to Rootstock, 25 are fully active, 6 are partial or adapted, 37 are missing, and 1 still needs verifying. Rootstock tracks Ethereum's EVM opcode and precompile additions closely up to Cancun (except blobs), but skipped every gas-model change since Berlin (2929, 2930, 3529, 2200, 1884 repricing) and has no typed transactions.
 
 ## Homestead
 
@@ -84,7 +84,7 @@ Meta: [EIP-1013](https://eips.ethereum.org/EIPS/eip-1013).
 |---|---|---|---|---|---|---|
 | [145](https://eips.ethereum.org/EIPS/eip-145) | Bitwise shifting instructions in EVM | **Yes** | Wasabi | 1,591,000 | SHL/SHR/SAR via [RSKIP-120](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP120.md) (Wasabi) ([`VM.java:1870`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/VM.java#L1870)). |  |
 | [1014](https://eips.ethereum.org/EIPS/eip-1014) | Skinny CREATE2 | **Yes** | Wasabi | 1,591,000 | CREATE2 via [RSKIP-125](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP125.md) (Wasabi) ([`VM.java:2115`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/VM.java#L2115)). |  |
-| [1052](https://eips.ethereum.org/EIPS/eip-1052) | EXTCODEHASH opcode | **Yes** | Papyrus | 2,392,700 | EXTCODEHASH via [RSKIP-140](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP140.md) (Papyrus), corrected by [RSKIP-169](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP169.md) (Iris). |  |
+| [1052](https://eips.ethereum.org/EIPS/eip-1052) | EXTCODEHASH opcode | **Partial** | Iris | 3,614,800 | EXTCODEHASH via [RSKIP-140](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP140.md) (Papyrus), corrected by [RSKIP-169](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP169.md) (Iris): gas 400, 0 for non-existent accounts, empty-code hash for accounts without code ([`MutableRepository.java:217`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/db/MutableRepository.java#L217)). Deviation: EIP-1052 returns 0 for EIP-161 *empty* accounts; RSK returns the empty-code hash, and RSK does create empty accounts (161 rule c). |  |
 | [1234](https://eips.ethereum.org/EIPS/eip-1234) | Constantinople Difficulty Bomb Delay and Block Reward Adjustment | **N/A** |  |  | Ethereum difficulty-bomb schedule; Rootstock has no difficulty bomb. |  |
 | [1283](https://eips.ethereum.org/EIPS/eip-1283) | Net gas metering for SSTORE without dirty maps | **N/A** |  |  | Reverted in Ethereum by Petersburg before activation. |  |
 
@@ -133,7 +133,7 @@ Meta: [EIP-7568](https://eips.ethereum.org/EIPS/eip-7568).
 | [1559](https://eips.ethereum.org/EIPS/eip-1559) | Fee market change for ETH 1.0 chain | **Partial** | Genesis | 0 | No 1559 fee market or Type-2 tx. Closest analogue since genesis: a consensus-enforced block floor, header `minimumGasPrice` ([`BlockHeader.java:127`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/core/BlockHeader.java#L127)). Every tx must pay at least it ([`TxsMinGasPriceRule`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/co/rsk/validators/TxsMinGasPriceRule.java#L33)), and it can only move a bounded step from the parent ([`PrevMinGasPriceRule`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/co/rsk/validators/PrevMinGasPriceRule.java#L31)). It's miner-voted, not burnt, with no gas-target elasticity. BASEFEE (EIP-3198) returns it ([`VM.java:1101`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/VM.java#L1101)). Type-2 encoding in [RSKIP-546](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP546.md) Draft. | Partial: Type-2 encoding, zero base fee |
 | [3198](https://eips.ethereum.org/EIPS/eip-3198) | BASEFEE opcode | **Yes** | Arrowhead | 6,223,700 | BASEFEE via [RSKIP-412](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP412.md) (Arrowhead) ([`VM.java:1950`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/VM.java#L1950)); returns the block's `minimumGasPrice` ([`VM.java:1101`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/VM.java#L1101)). |  |
 | [3529](https://eips.ethereum.org/EIPS/eip-3529) | Reduction in refunds | **No** |  |  | Pre-London refunds ([`GasCost.java:61`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/GasCost.java#L61): REFUND_SSTORE 15000, SUICIDE_REFUND 24000). |  |
-| [3541](https://eips.ethereum.org/EIPS/eip-3541) | Reject new contract code starting with the 0xEF byte | **Yes** | Vetiver | 8,804,200 | [RSKIP-544](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP544.md) (Vetiver). |  |
+| [3541](https://eips.ethereum.org/EIPS/eip-3541) | Reject new contract code starting with the 0xEF byte | **Yes** | Vetiver | 8,804,200 | [RSKIP-544](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP544.md) (Vetiver), on both paths: CREATE/CREATE2 ([`Program.java:712`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/program/Program.java#L712)) and contract-creation txs ([`TransactionExecutor.java:541`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/core/TransactionExecutor.java#L541)). |  |
 | [3554](https://eips.ethereum.org/EIPS/eip-3554) | Difficulty Bomb Delay to December 2021 | **N/A** |  |  | Ethereum difficulty-bomb schedule; Rootstock has no difficulty bomb. |  |
 
 ## Arrow Glacier
@@ -250,7 +250,7 @@ Rules Ethereum applies from genesis, not tied to one upgrade.
 
 | EIP | Title | RSK | RSK upgrade | Mainnet height | Evidence | Under assumptions |
 |---|---|---|---|---|---|---|
-| [684](https://eips.ethereum.org/EIPS/eip-684) | Revert creation in case of collision | **Yes** | Genesis | 0 | `addressCollisionException` [`Program.java:547`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/program/Program.java#L547). |  |
+| [684](https://eips.ethereum.org/EIPS/eip-684) | Revert creation in case of collision | **Partial** | Wasabi | 1,591,000 | CREATE/CREATE2 only, since [RSKIP-125](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP125.md) (Wasabi): fails on an address with code or non-zero nonce ([`Program.java:572`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/program/Program.java#L572)) or deleted earlier in the block ([`Program.java:543`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/program/Program.java#L543)). Contract-creation txs have no collision check: the account is re-created, keeping only its balance ([RSKIP-174](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP174.md) (Iris); [`TransactionExecutor.java:403`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/core/TransactionExecutor.java#L403)). A collision there would need a hash collision, so the gap is theoretical. |  |
 | [2681](https://eips.ethereum.org/EIPS/eip-2681) | Limit account nonce to 2^64-1 | **No** |  |  | No consensus rule or RSKIP: nonces are `BigInteger` and block validation only checks equality ([`BlockTxsValidationRule.java:89`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/co/rsk/validators/BlockTxsValidationRule.java#L89)); CREATE/CREATE2 has no nonce-cap check ([`Program.java:472`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/program/Program.java#L472)). Only the tx pool ([`TxPendingValidator.java:66`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/co/rsk/net/handler/TxPendingValidator.java#L66)) and block-building sort ([`PendingState.java:194`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/co/rsk/core/bc/PendingState.java#L194)) reject nonces over 8 bytes, which still allows 2^64-1 (the EIP forbids it). |  |
 | [3607](https://eips.ethereum.org/EIPS/eip-3607) | Reject transactions from senders with deployed code | **No** |  |  | No sender-code check in [`TransactionExecutor.init()`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/core/TransactionExecutor.java#L162) or the pool's [`TxValidatorAccountStateValidator.java`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/co/rsk/net/handler/txvalidator/TxValidatorAccountStateValidator.java); [RSKIP-545](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP545.md) notes this and doesn't need it. | Not needed (RSKIP-545) |
 | [7610](https://eips.ethereum.org/EIPS/eip-7610) | Revert creation in case of non-empty storage (Last Call) | **?** |  |  | Collision on non-empty storage: not checked. |  |
@@ -270,11 +270,11 @@ Not part of an Ethereum hard fork, listed so the RSKIP → EIP mapping is comple
 
 | RSK upgrade | Mainnet height | EIPs |
 |---|---|---|
-| Genesis | 0 | 7, 100, 140, 150, 155, 160, 170, 198, 211, 658, 684, 1559 |
+| Genesis | 0 | 7, 100, 140, 150, 155, 160, 170, 198, 211, 658, 1559 |
 | Orchid | 729,000 | 214 |
-| Wasabi | 1,591,000 | 145, 161, 1014 |
-| Papyrus | 2,392,700 | 196, 197, 1052, 1108, 1344, 1884 |
-| Iris | 3,614,800 | 152 |
+| Wasabi | 1,591,000 | 145, 161, 684, 1014 |
+| Papyrus | 2,392,700 | 196, 197, 1108, 1344, 1884 |
+| Iris | 3,614,800 | 152, 1052 |
 | Arrowhead | 6,223,700 | 2028, 3198, 3855 |
 | Lovell | 7,338,024 | 2, 1153, 3860, 5656 |
 | Vetiver | 8,804,200 | 3541 |

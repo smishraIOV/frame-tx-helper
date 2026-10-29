@@ -101,7 +101,9 @@ R = {
     # Constantinople
     145: ("Yes", "Wasabi", f"SHL/SHR/SAR via {rskip(120, 'Wasabi')} ({code('org/ethereum/vm/VM.java', 1870)})."),
     1014: ("Yes", "Wasabi", f"CREATE2 via {rskip(125, 'Wasabi')} ({code('org/ethereum/vm/VM.java', 2115)})."),
-    1052: ("Yes", "Papyrus", f"EXTCODEHASH via {rskip(140, 'Papyrus')}, corrected by {rskip(169, 'Iris')}."),
+    1052: ("Partial", "Iris", f"EXTCODEHASH via {rskip(140, 'Papyrus')}, corrected by {rskip(169, 'Iris')}: gas 400, 0 for non-existent accounts, "
+           f"empty-code hash for accounts without code ({code('org/ethereum/db/MutableRepository.java', 217)}). Deviation: EIP-1052 returns 0 for EIP-161 *empty* accounts; "
+           "RSK returns the empty-code hash, and RSK does create empty accounts (161 rule c)."),
     1234: BOMB,
     1283: (N_A, "", "Reverted in Ethereum by Petersburg before activation."),
     # Istanbul
@@ -126,7 +128,8 @@ R = {
            f"Type-2 encoding in {rskip(546)} Draft.", "Partial: Type-2 encoding, zero base fee"),
     3198: ("Yes", "Arrowhead", f"BASEFEE via {rskip(412, 'Arrowhead')} ({code('org/ethereum/vm/VM.java', 1950)}); returns the block's `minimumGasPrice` ({code('org/ethereum/vm/VM.java', 1101)})."),
     3529: ("No", "", f"Pre-London refunds ({code('org/ethereum/vm/GasCost.java', 61)}: REFUND_SSTORE 15000, SUICIDE_REFUND 24000)."),
-    3541: ("Yes", "Vetiver", f"{rskip(544, 'Vetiver')}."),
+    3541: ("Yes", "Vetiver", f"{rskip(544, 'Vetiver')}, on both paths: CREATE/CREATE2 ({code('org/ethereum/vm/program/Program.java', 712)}) "
+           f"and contract-creation txs ({code('org/ethereum/core/TransactionExecutor.java', 541)})."),
     3554: BOMB,
     # Arrow / Gray Glacier
     4345: BOMB,
@@ -173,7 +176,10 @@ R = {
     7843: (N_A, "", "SLOTNUM is beacon-slot based; would need an RSK equivalent."),
     8024: ("No", "", f"No RSKIP. Rootstock's old DUPN/SWAPN at 0xa8/0xa9 ({code('org/ethereum/vm/OpCode.java', 630)}) are disabled by {rskip(191, 'Iris')}."),
     # Retroactive
-    684: ("Yes", "Genesis", f"`addressCollisionException` {code('org/ethereum/vm/program/Program.java', 547)}."),
+    684: ("Partial", "Wasabi", f"CREATE/CREATE2 only, since {rskip(125, 'Wasabi')}: fails on an address with code or non-zero nonce "
+          f"({code('org/ethereum/vm/program/Program.java', 572)}) or deleted earlier in the block ({code('org/ethereum/vm/program/Program.java', 543)}). "
+          f"Contract-creation txs have no collision check: the account is re-created, keeping only its balance ({rskip(174, 'Iris')}; "
+          f"{code('org/ethereum/core/TransactionExecutor.java', 403)}). A collision there would need a hash collision, so the gap is theoretical."),
     2681: ("No", "", f"No consensus rule or RSKIP: nonces are `BigInteger` and block validation only checks equality "
            f"({code('co/rsk/validators/BlockTxsValidationRule.java', 89)}); CREATE/CREATE2 has no nonce-cap check ({code('org/ethereum/vm/program/Program.java', 472)}). "
            f"Only the tx pool ({code('co/rsk/net/handler/TxPendingValidator.java', 66)}) and block-building sort ({code('co/rsk/core/bc/PendingState.java', 194)}) "
