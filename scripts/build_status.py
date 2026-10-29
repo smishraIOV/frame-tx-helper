@@ -141,7 +141,9 @@ R = {
     4788: BEACON,
     4844: ("No", "", f"{rskip(558)} Draft.", "If needed (RSKIP-558)"),
     5656: ("Yes", "Lovell", f"MCOPY via {rskip(445, 'Lovell')} ({code('org/ethereum/vm/VM.java', 2107)})."),
-    6780: ("No", "", f"No same-tx restriction in `doSUICIDE` ({code('org/ethereum/vm/VM.java', 1789)}) (light check)."),
+    6780: ("No", "", f"Pre-Cancun SELFDESTRUCT: always deletes the account, with no same-tx check ({code('org/ethereum/vm/program/Program.java', 434)}); "
+           f"burns the balance when the beneficiary is the contract itself ({code('org/ethereum/vm/program/Program.java', 428)}); "
+           f"SUICIDE_REFUND still paid ({code('org/ethereum/core/TransactionExecutor.java', 693)}). No RSKIP."),
     7516: BLOBS,
     # Prague
     2537: ("No", "", f"{rskip(188)} (BLS12-381 precompiles) Withdrawn."),

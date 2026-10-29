@@ -45,7 +45,7 @@ RSK = {
     4788: ("N/A", "Beacon-chain specific."),
     4844: ("No", "RSKIP-558 Blob Carrying Transactions: Draft."),
     4895: ("N/A", "Beacon-chain specific."),
-    6780: ("No", "No same-tx restriction visible in `VM.doSUICIDE` (light check)."),
+    6780: ("No", "Pre-Cancun SELFDESTRUCT: `Program.suicide` always deletes the account (`Program.java:434`), with no same-tx check; balance is burnt when the beneficiary is the contract itself (`:428`); SUICIDE_REFUND still paid (`TransactionExecutor.java:693`). No RSKIP."),
     7594: ("No", "PeerDAS; only referenced by RSKIP-558 (Draft). No blobs on RSK."),
     7623: ("No", "No RSKIP."),
     7702: ("No", "RSKIP-545 Set Code for EOAs: Draft."),
