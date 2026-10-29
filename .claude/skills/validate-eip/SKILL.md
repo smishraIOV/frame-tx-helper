@@ -27,11 +27,11 @@ Goal: a status for one EIP that a reviewer can trust, with every claim backed by
    - Block-level rules: `co/rsk/validators/`. Transaction-pool-only rules: `co/rsk/net/handler/txvalidator/`, `co/rsk/net/handler/TxPendingValidator.java`, `co/rsk/core/bc/PendingState.java`. **A pool-only check is not adoption**: it doesn't bind other nodes (EIP-2681, 7825).
 3. **Find the activation.** Look for an `activations.isActive(RSKIP<n>)` gate on each rule's code path. Map RSKIP → network upgrade with `rskj-core/src/main/resources/reference.conf` (`consensusRules`), and upgrade → mainnet height with `config/main.conf` (`hardforkActivationHeights`). Code with no gate has applied since genesis. Different rules can activate in different upgrades: date the status by the upgrade that completed it, and say which rule came when (EIP-2: rule (3) for `CREATE` only since RSKIP-453, Lovell).
 4. **Read the RSKIP**, if there is one (`../RSKIPs/IPs/RSKIP<n>.md`, or the PR head named in `sources.json`). Record its status (Adopted / Draft / Withdrawn…) and any stated deviation from the EIP. An RSKIP that is Draft activates nothing.
-5. **Search for evidence of absence properly** before writing "No":
-   - Run multi-ref searches under `bash -c '...'`. zsh doesn't word-split `$REFS`, so a git grep over several branches silently fails.
-   - Run a **control** first, a search that must hit (EIP-3198 → RSKIP-412). If the control finds nothing, the method is broken and a "no hits" result means nothing.
-   - Search all RSKIPs refs: `git for-each-ref refs/heads refs/remotes/origin`, then `git grep -i -E "eip[- ]?<n>([^0-9]|$)" $REFS -- IPs`, plus feature keywords (opcode or precompile names).
-   - Search rskj sources for the feature (opcode name, constant, precompile address). rskj commit messages and branch names rarely name EIPs, so a miss there is not evidence.
+5. **Search for evidence of absence properly** before writing "No": follow the `rsk-evidence-search` skill. In short:
+   - Search an HTTPS mirror of upstream `rsksmart/RSKIPs` (every branch and PR head), not the local fork clone.
+   - Run it under `bash`, with a control that must hit (EIP-3198 → RSKIP-412).
+   - Search feature keywords as well as the EIP number, and search rskj sources for the feature.
+   - Never fetch an SSH remote; use the GitHub API for remote state.
 6. **Check every cited line**, including the method it's in. `sed -n '<n>p'` shows the line but not its context; a citation to the `GAS` opcode was once offered as evidence for `CREATE`. `scripts/check_citations.py` prints the enclosing method for every citation.
 7. **Classify** the EIP using the project's status definitions:
    - **Yes**: every applicable rule holds on mainnet.

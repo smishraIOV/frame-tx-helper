@@ -44,7 +44,7 @@
   "no_rskip_search": {
     "date": "2026-10-28",
     "refs": 894,
-    "scope": "all 263 branches and 631 pull-request heads of `rsksmart/RSKIPs` (HTTPS mirror clone)",
+    "scope": "all 263 branches and 631 pull-request heads of `rsksmart/RSKIPs`, via an HTTPS mirror clone",
     "control": "EIP-3198 found in RSKIP-412"
   }
 }
