@@ -11,9 +11,9 @@ Task 2 in `readme.md`: every Core EIP in each Ethereum hard fork, its Rootstock 
 | Fork | Core EIPs | Yes | Partial | Partial (WIP) | Adapted | No | N/A | ? |
 |---|---|---|---|---|---|---|---|---|
 | Homestead | 2 | 2 |  |  |  |  |  |  |
-| Tangerine Whistle | 1 |  |  |  |  |  |  | 1 |
-| Spurious Dragon | 4 | 2 | 1 |  |  |  |  | 1 |
-| Byzantium | 9 | 5 |  |  | 1 |  | 1 | 2 |
+| Tangerine Whistle | 1 |  | 1 |  |  |  |  |  |
+| Spurious Dragon | 4 | 3 | 1 |  |  |  |  |  |
+| Byzantium | 9 | 7 |  |  | 1 |  | 1 |  |
 | Constantinople | 5 | 2 | 1 |  |  |  | 2 |  |
 | Istanbul | 6 | 2 | 1 |  |  |  |  | 3 |
 | Muir Glacier | 1 |  |  |  |  |  | 1 |  |
@@ -28,9 +28,9 @@ Task 2 in `readme.md`: every Core EIP in each Ethereum hard fork, its Rootstock 
 | Osaka (Fusaka) | 9 |  |  |  |  | 7 | 1 | 1 |
 | Amsterdam (Glamsterdam, scheduled) | 18 |  |  |  |  | 12 | 6 |  |
 | Retroactive | 4 |  | 1 |  |  | 2 |  | 1 |
-| **Total** | **93** | **18** | **4** | **1** | **1** | **32** | **24** | **13** |
+| **Total** | **93** | **21** | **5** | **1** | **1** | **32** | **24** | **9** |
 
-Of the 69 EIPs that apply to Rootstock, 18 are fully active, 5 are partial or adapted, 1 is partial only through Draft RSKIP work, 32 are missing, and 13 still need verifying. Rootstock tracks Ethereum's EVM opcode and precompile additions closely up to Cancun (except blobs), but appears to have skipped the gas-model changes since Berlin (2929, 2930, 3529, 2200, 1884 repricing; several still unverified) and has no typed transactions.
+Of the 69 EIPs that apply to Rootstock, 21 are fully active, 6 are partial or adapted, 1 is partial only through Draft RSKIP work, 32 are missing, and 9 still need verifying. Rootstock tracks Ethereum's EVM opcode and precompile additions closely up to Cancun (except blobs), but appears to have skipped the gas-model changes since Berlin (2929, 2930, 3529, 2200, 1884 repricing; several still unverified) and has no typed transactions.
 
 ## Homestead
 
@@ -47,7 +47,7 @@ Meta: [EIP-608](https://eips.ethereum.org/EIPS/eip-608).
 
 | EIP | Title | RSK | RSK upgrade | Mainnet height | Evidence | Under assumptions |
 |---|---|---|---|---|---|---|
-| [150](https://eips.ethereum.org/EIPS/eip-150) | Gas cost changes for IO-heavy operations | **?** | Genesis | 0 | **Unverified** (claimed Yes): EIP-150 costs in [`GasCost.java`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/GasCost.java) (BALANCE 400, SLOAD 200, EXTCODESIZE 700); `getCallStackDepth` added by [RSKIP-203](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP203.md) (Arrowhead). |  |
+| [150](https://eips.ethereum.org/EIPS/eip-150) | Gas cost changes for IO-heavy operations | **Partial** | Genesis | 0 | Gas repricing matches: CALL 700, BALANCE 400, EXTCODESIZE/COPY 700, SLOAD 200, SELFDESTRUCT 5000 ([`GasCost.java:52`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/GasCost.java#L52)). **Divergence:** no 63/64 rule; the callee gets min(remaining, requested) gas, so a call can forward all remaining gas ([`VM.java:1659`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/VM.java#L1659)); CREATE also passes all remaining gas ([`VM.java:1468`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/VM.java#L1468)). `getCallStackDepth` added by [RSKIP-203](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP203.md) (Arrowhead). |  |
 
 ## Spurious Dragon
 
@@ -55,7 +55,7 @@ Meta: [EIP-607](https://eips.ethereum.org/EIPS/eip-607).
 
 | EIP | Title | RSK | RSK upgrade | Mainnet height | Evidence | Under assumptions |
 |---|---|---|---|---|---|---|
-| [155](https://eips.ethereum.org/EIPS/eip-155) | Simple replay attack protection | **?** | Genesis | 0 | **Unverified** (claimed Yes): Chain ID in `v` [`Transaction.java:73`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/core/Transaction.java#L73); mainnet chain ID 30. |  |
+| [155](https://eips.ethereum.org/EIPS/eip-155) | Simple replay attack protection | **Yes** | Genesis | 0 | Signing payload is rlp(..., chainId, 0, 0) ([`Transaction.java:468`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/core/Transaction.java#L468)); v = chainId*2 + 35 + recId ([`Transaction.java:445`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/core/Transaction.java#L445)); txs accepted with chain ID 0 or the network's ([`Transaction.java:325`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/core/Transaction.java#L325)). Mainnet chain ID 30. |  |
 | [160](https://eips.ethereum.org/EIPS/eip-160) | EXP cost increase | **Yes** | Genesis | 0 | `EXP_BYTE_GAS = 50` [`GasCost.java:90`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/GasCost.java#L90). |  |
 | [161](https://eips.ethereum.org/EIPS/eip-161) | State trie clearing (invariant-preserving alternative) | **Partial** | Wasabi | 1,591,000 | Only rule (a), and only for CREATE/CREATE2: new contracts start at nonce 1 via [RSKIP-125](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP125.md) (Wasabi) ([`Program.java:592`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/program/Program.java#L592)); contract-creation txs still start at 0 ([`TransactionExecutor.java:403`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/core/TransactionExecutor.java#L403)). (b) 25000 new-account gas is charged even for zero value ([`VM.java:1734`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/VM.java#L1734), [`VM.java:1797`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/VM.java#L1797)). (c) A zero-value transfer creates an empty account ([`MutableRepository.java:322`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/db/MutableRepository.java#L322)). (d) No end-of-tx deletion of touched empty accounts; only SUICIDE deletions ([`TransactionExecutor.java:622`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/core/TransactionExecutor.java#L622)). |  |
 | [170](https://eips.ethereum.org/EIPS/eip-170) | Contract code size limit | **Yes** | Genesis | 0 | `MAX_CONTRACT_SIZE = 0x6000` [`Constants.java:55`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/config/Constants.java#L55), enforced in [`TransactionExecutor.java:529`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/core/TransactionExecutor.java#L529). |  |
@@ -67,11 +67,11 @@ Meta: [EIP-609](https://eips.ethereum.org/EIPS/eip-609).
 | EIP | Title | RSK | RSK upgrade | Mainnet height | Evidence | Under assumptions |
 |---|---|---|---|---|---|---|
 | [100](https://eips.ethereum.org/EIPS/eip-100) | Change difficulty adjustment to target mean block time including uncles | **Adapted** | Genesis | 0 | Rootstock uses its own uncle-aware difficulty formula ([`DifficultyCalculator.java:77`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/co/rsk/core/DifficultyCalculator.java#L77)), not EIP-100's. |  |
-| [140](https://eips.ethereum.org/EIPS/eip-140) | REVERT instruction | **?** | Genesis | 0 | **Unverified** (claimed Yes): REVERT [`VM.java:2133`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/VM.java#L2133). |  |
+| [140](https://eips.ethereum.org/EIPS/eip-140) | REVERT instruction | **Yes** | Genesis | 0 | REVERT (no activation gate, [`VM.java:2133`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/VM.java#L2133)) returns data and flags the result reverted ([`VM.java:1752`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/VM.java#L1752)); a reverted child call rolls back state and refunds its remaining gas ([`Program.java:962`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/program/Program.java#L962)); a reverted top-level tx rolls back without forfeiting leftover gas ([`TransactionExecutor.java:471`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/core/TransactionExecutor.java#L471)). |  |
 | [196](https://eips.ethereum.org/EIPS/eip-196) | Precompiled contracts for addition and scalar multiplication on the elliptic curve alt_bn128 | **Yes** | Papyrus | 2,392,700 | alt_bn128 ADD/MUL enabled by [RSKIP-137](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP137.md) (Papyrus) ([`PrecompiledContracts.java:145`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/PrecompiledContracts.java#L145)). |  |
 | [197](https://eips.ethereum.org/EIPS/eip-197) | Precompiled contracts for optimal ate pairing check on the elliptic curve alt_bn128 | **Yes** | Papyrus | 2,392,700 | alt_bn128 pairing enabled by [RSKIP-137](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP137.md) (Papyrus). |  |
 | [198](https://eips.ethereum.org/EIPS/eip-198) | Big integer modular exponentiation | **Yes** | Genesis | 0 | MODEXP is a genesis precompile; EIP-198 pricing (`GQUAD_DIVISOR = 20`, [`PrecompiledContracts.java:462`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/PrecompiledContracts.java#L462)). |  |
-| [211](https://eips.ethereum.org/EIPS/eip-211) | New opcodes: RETURNDATASIZE and RETURNDATACOPY | **?** | Genesis | 0 | **Unverified** (claimed Yes): RETURNDATASIZE/COPY [`OpCode.java:229`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/OpCode.java#L229); buffer clean-up by [RSKIP-171](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP171.md) (Iris). |  |
+| [211](https://eips.ethereum.org/EIPS/eip-211) | New opcodes: RETURNDATASIZE and RETURNDATACOPY | **Yes** | Iris | 3,614,800 | RETURNDATASIZE/COPY present with no activation gate ([`VM.java:1927`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/VM.java#L1927)); out-of-bounds copy throws ([`VM.java:974`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/VM.java#L974)). Complete since [RSKIP-171](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP171.md) (Iris), which states full EIP-211 compatibility by clearing the buffer in call-like opcodes that don't create a frame ([`Program.java:915`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/program/Program.java#L915)). |  |
 | [214](https://eips.ethereum.org/EIPS/eip-214) | New opcode STATICCALL | **Yes** | Orchid | 729,000 | STATICCALL gated by [RSKIP-91](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP91.md) (Orchid) ([`VM.java:2126`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/VM.java#L2126)). |  |
 | [649](https://eips.ethereum.org/EIPS/eip-649) | Metropolis Difficulty Bomb Delay and Block Reward Reduction | **N/A** |  |  | Ethereum difficulty-bomb schedule; Rootstock has no difficulty bomb. |  |
 | [658](https://eips.ethereum.org/EIPS/eip-658) | Embedding transaction status code in receipts | **Yes** | Genesis | 0 | Receipt status byte [`TransactionReceipt.java:45`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/core/TransactionReceipt.java#L45). |  |
@@ -259,11 +259,11 @@ Rules Ethereum applies from genesis, not tied to one upgrade.
 
 | RSK upgrade | Mainnet height | EIPs |
 |---|---|---|
-| Genesis | 0 | 7, 100, 140?, 150?, 155?, 160, 170, 198, 211?, 658 |
+| Genesis | 0 | 7, 100, 140, 150, 155, 160, 170, 198, 658 |
 | Orchid | 729,000 | 214 |
 | Wasabi | 1,591,000 | 145, 161, 684, 1014 |
 | Papyrus | 2,392,700 | 196, 197, 1108?, 1344, 1884 |
-| Iris | 3,614,800 | 152, 1052 |
+| Iris | 3,614,800 | 152, 211, 1052 |
 | Arrowhead | 6,223,700 | 2028?, 3198, 3855 |
 | Lovell | 7,338,024 | 2, 1153, 3860?, 5656 |
 | Vetiver | 8,804,200 | 3541 |

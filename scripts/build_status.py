@@ -78,9 +78,13 @@ R = {
         "(4) Difficulty formula: N/A, RSK uses its own."),
     7: ("Yes", "Genesis", f"DELEGATECALL {code('org/ethereum/vm/OpCode.java', 669)}; value handling fixed by {rskip(103, 'Orchid 0.6.0')}."),
     # Tangerine Whistle
-    150: ("Yes", "Genesis", f"EIP-150 costs in {code('org/ethereum/vm/GasCost.java')} (BALANCE 400, SLOAD 200, EXTCODESIZE 700); `getCallStackDepth` added by {rskip(203, 'Arrowhead')}."),
+    150: ("Partial", "Genesis", f"Gas repricing matches: CALL 700, BALANCE 400, EXTCODESIZE/COPY 700, SLOAD 200, SELFDESTRUCT 5000 "
+          f"({code('org/ethereum/vm/GasCost.java', 52)}). **Divergence:** no 63/64 rule; the callee gets min(remaining, requested) gas, so a call can forward all "
+          f"remaining gas ({code('org/ethereum/vm/VM.java', 1659)}); CREATE also passes all remaining gas ({code('org/ethereum/vm/VM.java', 1468)}). `getCallStackDepth` added by {rskip(203, 'Arrowhead')}."),
     # Spurious Dragon
-    155: ("Yes", "Genesis", f"Chain ID in `v` {code('org/ethereum/core/Transaction.java', 73)}; mainnet chain ID 30."),
+    155: ("Yes", "Genesis", f"Signing payload is rlp(..., chainId, 0, 0) ({code('org/ethereum/core/Transaction.java', 468)}); "
+          f"v = chainId*2 + 35 + recId ({code('org/ethereum/core/Transaction.java', 445)}); txs accepted with chain ID 0 or the network's "
+          f"({code('org/ethereum/core/Transaction.java', 325)}). Mainnet chain ID 30."),
     160: ("Yes", "Genesis", f"`EXP_BYTE_GAS = 50` {code('org/ethereum/vm/GasCost.java', 90)}."),
     161: ("Partial", "Wasabi", f"Only rule (a), and only for CREATE/CREATE2: new contracts start at nonce 1 via {rskip(125, 'Wasabi')} "
           f"({code('org/ethereum/vm/program/Program.java', 592)}); contract-creation txs still start at 0 ({code('org/ethereum/core/TransactionExecutor.java', 403)}). "
@@ -90,11 +94,16 @@ R = {
     170: ("Yes", "Genesis", f"`MAX_CONTRACT_SIZE = 0x6000` {code('org/ethereum/config/Constants.java', 55)}, enforced in {code('org/ethereum/core/TransactionExecutor.java', 529)}."),
     # Byzantium
     100: ("Adapted", "Genesis", f"Rootstock uses its own uncle-aware difficulty formula ({code('co/rsk/core/DifficultyCalculator.java', 77)}), not EIP-100's."),
-    140: ("Yes", "Genesis", f"REVERT {code('org/ethereum/vm/VM.java', 2133)}."),
+    140: ("Yes", "Genesis", f"REVERT (no activation gate, {code('org/ethereum/vm/VM.java', 2133)}) returns data and flags the result reverted "
+          f"({code('org/ethereum/vm/VM.java', 1752)}); a reverted child call rolls back state and refunds its remaining gas "
+          f"({code('org/ethereum/vm/program/Program.java', 962)}); a reverted top-level tx rolls back without forfeiting leftover gas "
+          f"({code('org/ethereum/core/TransactionExecutor.java', 471)})."),
     196: ("Yes", "Papyrus", f"alt_bn128 ADD/MUL enabled by {rskip(137, 'Papyrus')} ({code('org/ethereum/vm/PrecompiledContracts.java', 145)})."),
     197: ("Yes", "Papyrus", f"alt_bn128 pairing enabled by {rskip(137, 'Papyrus')}."),
     198: ("Yes", "Genesis", f"MODEXP is a genesis precompile; EIP-198 pricing (`GQUAD_DIVISOR = 20`, {code('org/ethereum/vm/PrecompiledContracts.java', 462)})."),
-    211: ("Yes", "Genesis", f"RETURNDATASIZE/COPY {code('org/ethereum/vm/OpCode.java', 229)}; buffer clean-up by {rskip(171, 'Iris')}."),
+    211: ("Yes", "Iris", f"RETURNDATASIZE/COPY present with no activation gate ({code('org/ethereum/vm/VM.java', 1927)}); out-of-bounds copy throws "
+          f"({code('org/ethereum/vm/VM.java', 974)}). Complete since {rskip(171, 'Iris')}, which states full EIP-211 compatibility by clearing the buffer in "
+          f"call-like opcodes that don't create a frame ({code('org/ethereum/vm/program/Program.java', 915)})."),
     214: ("Yes", "Orchid", f"STATICCALL gated by {rskip(91, 'Orchid')} ({code('org/ethereum/vm/VM.java', 2126)})."),
     649: BOMB,
     658: ("Yes", "Genesis", f"Receipt status byte {code('org/ethereum/core/TransactionReceipt.java', 45)}."),
@@ -192,7 +201,7 @@ for n in (2780, 7708, 7778, 7928, 7954, 7976, 7981, 7997, 8037, 8038, 8246):
 
 
 # Rows whose evidence was taken on trust (a brief citation, not a rule-by-rule check): shown as "?" until validated.
-UNVERIFIED = {140, 150, 155, 211, 1108, 2028, 2200, 2929, 3529, 3651, 3860, 7823}
+UNVERIFIED = {1108, 2028, 2200, 2929, 3529, 3651, 3860, 7823}
 CLAIMED = {}
 for n in UNVERIFIED:
     st, up, ev, *rest = R[n]
