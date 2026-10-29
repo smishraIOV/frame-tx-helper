@@ -281,8 +281,8 @@ total = sum(len(n) for _, _, n, _ in per_fork) + len(RETROACTIVE)
 w(f"| **Total** | **{total}** | " + " | ".join(f"**{counts.get(k, 0)}**" for k in cols) + " |\n")
 applicable = total - counts[N_A]
 w(f"Of the {applicable} EIPs that apply to Rootstock, {counts['Yes']} are fully active, {counts['Partial'] + counts['Adapted']} are partial or adapted, {counts['Partial (WIP)']} is partial only through Draft RSKIP work, "
-  f"{counts['No']} are missing, and {counts['?']} {'still needs' if counts['?'] == 1 else 'still need'} verifying. Rootstock tracks Ethereum's EVM opcode and precompile additions closely up to Cancun (except blobs), "
-  "but appears to have skipped the gas-model changes since Berlin (2929, 2930, 3529, 2200, 1884 repricing; several still unverified) and has no typed transactions.\n")
+  f"" + (f"{counts['No']} are missing, and {counts['?']} still need verifying" if counts['?'] else f"and {counts['No']} are missing") + f". Rootstock tracks Ethereum's EVM opcode and precompile additions closely up to Cancun (except blobs), "
+  "but skipped the gas-model changes since Berlin (2929, 2930, 3529, 2200, 1884 repricing) and EIP-150's 63/64 rule, and has no typed transactions.\n")
 
 for name, meta_eip, nums, c in per_fork:
     if not nums:

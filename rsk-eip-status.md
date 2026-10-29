@@ -30,7 +30,7 @@ Task 2 in `readme.md`: every Core EIP in each Ethereum hard fork, its Rootstock 
 | Retroactive | 4 |  | 1 |  |  | 3 |  |  |
 | **Total** | **93** | **24** | **5** | **1** | **1** | **38** | **24** | **0** |
 
-Of the 69 EIPs that apply to Rootstock, 24 are fully active, 6 are partial or adapted, 1 is partial only through Draft RSKIP work, 38 are missing, and 0 still need verifying. Rootstock tracks Ethereum's EVM opcode and precompile additions closely up to Cancun (except blobs), but appears to have skipped the gas-model changes since Berlin (2929, 2930, 3529, 2200, 1884 repricing; several still unverified) and has no typed transactions.
+Of the 69 EIPs that apply to Rootstock, 24 are fully active, 6 are partial or adapted, 1 is partial only through Draft RSKIP work, and 38 are missing. Rootstock tracks Ethereum's EVM opcode and precompile additions closely up to Cancun (except blobs), but skipped the gas-model changes since Berlin (2929, 2930, 3529, 2200, 1884 repricing) and EIP-150's 63/64 rule, and has no typed transactions.
 
 ## Homestead
 
