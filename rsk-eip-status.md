@@ -255,17 +255,6 @@ Rules Ethereum applies from genesis, not tied to one upgrade.
 | [3607](https://eips.ethereum.org/EIPS/eip-3607) | Reject transactions from senders with deployed code | **No** |  |  | No sender-code check in [`TransactionExecutor.init()`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/core/TransactionExecutor.java#L162) or the pool's [`TxValidatorAccountStateValidator.java`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/co/rsk/net/handler/txvalidator/TxValidatorAccountStateValidator.java); [RSKIP-545](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP545.md) notes this and doesn't need it. | Not needed (RSKIP-545) |
 | [7610](https://eips.ethereum.org/EIPS/eip-7610) | Revert creation in case of non-empty storage (Last Call) | **?** |  |  | Collision on non-empty storage: not checked. |  |
 
-## Other EIPs/ERCs adopted through an RSKIP
-
-Not part of an Ethereum hard fork, listed so the RSKIP → EIP mapping is complete.
-
-| EIP | Title | Rootstock |
-|---|---|---|
-| [55](https://eips.ethereum.org/EIPS/eip-55) | ? | **Unverified:** [RSKIP-60](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP60.md): chain-ID-prefixed variant of the EIP-55 checksum. |
-| [1167](https://eips.ethereum.org/EIPS/eip-1167) | ? | **Unverified:** [RSKIP-159](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP159.md) (DApp layer). |
-| [1820](https://eips.ethereum.org/EIPS/eip-1820) | ? | **Unverified:** [RSKIP-148](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP148.md) (DApp layer): ERC-1820 registry. |
-| [712](https://eips.ethereum.org/EIPS/eip-712) | Typed structured data hashing and signing | **Unverified:** [RSKIP-712](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP712.md) (UI layer): RSK variant of typed-data signing. |
-
 ## Rootstock upgrades that brought in Ethereum EIPs
 
 | RSK upgrade | Mainnet height | EIPs |

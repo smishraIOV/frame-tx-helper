@@ -190,13 +190,6 @@ R = {
 for n in (2780, 7708, 7778, 7928, 7954, 7976, 7981, 7997, 8037, 8038, 8246):
     R.setdefault(n, ("No", "", "No RSKIP."))
 
-# EIPs/ERCs outside the hard forks that Rootstock adopted through an RSKIP.
-OTHER = [
-    (55, f"**Unverified:** {rskip(60)}: chain-ID-prefixed variant of the EIP-55 checksum."),
-    (1167, f"**Unverified:** {rskip(159)} (DApp layer)."),
-    (1820, f"**Unverified:** {rskip(148)} (DApp layer): ERC-1820 registry."),
-    (712, f"**Unverified:** {rskip(712)} (UI layer): RSK variant of typed-data signing."),
-]
 
 # Rows whose evidence was taken on trust (a brief citation, not a rule-by-rule check): shown as "?" until validated.
 UNVERIFIED = {140, 150, 155, 211, 1108, 2028, 2200, 2929, 3529, 3651, 3860, 7823}
@@ -283,13 +276,6 @@ w("Rules Ethereum applies from genesis, not tied to one upgrade.\n")
 w(HEADER)
 for n in RETROACTIVE:
     w(row(n))
-w("")
-
-w("## Other EIPs/ERCs adopted through an RSKIP\n")
-w("Not part of an Ethereum hard fork, listed so the RSKIP → EIP mapping is complete.\n")
-w("| EIP | Title | Rootstock |\n|---|---|---|")
-for n, ev in OTHER:
-    w(f"| [{n}]({EIP_URL.format(n)}) | {title(n)} | {ev} |")
 w("")
 
 w("## Rootstock upgrades that brought in Ethereum EIPs\n")
