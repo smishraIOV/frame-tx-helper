@@ -22,15 +22,15 @@ Task 2 in `readme.md`: every Core EIP in each Ethereum hard fork, its Rootstock 
 | Arrow Glacier | 1 |  |  |  |  |  | 1 |  |
 | Gray Glacier | 1 |  |  |  |  |  | 1 |  |
 | Paris (The Merge) | 2 |  |  |  |  |  | 2 |  |
-| Shanghai | 5 | 1 |  |  |  | 1 | 2 | 1 |
+| Shanghai | 5 | 2 |  |  |  | 1 | 2 |  |
 | Cancun (Dencun) | 6 | 2 |  |  |  | 3 | 1 |  |
 | Prague (Pectra) | 10 |  |  |  |  | 5 | 5 |  |
-| Osaka (Fusaka) | 9 |  |  |  |  | 7 | 1 | 1 |
+| Osaka (Fusaka) | 9 |  |  |  |  | 8 | 1 |  |
 | Amsterdam (Glamsterdam, scheduled) | 18 |  |  |  |  | 12 | 6 |  |
 | Retroactive | 4 |  | 1 |  |  | 2 |  | 1 |
-| **Total** | **93** | **23** | **5** | **1** | **1** | **36** | **24** | **3** |
+| **Total** | **93** | **24** | **5** | **1** | **1** | **37** | **24** | **1** |
 
-Of the 69 EIPs that apply to Rootstock, 23 are fully active, 6 are partial or adapted, 1 is partial only through Draft RSKIP work, 36 are missing, and 3 still need verifying. Rootstock tracks Ethereum's EVM opcode and precompile additions closely up to Cancun (except blobs), but appears to have skipped the gas-model changes since Berlin (2929, 2930, 3529, 2200, 1884 repricing; several still unverified) and has no typed transactions.
+Of the 69 EIPs that apply to Rootstock, 24 are fully active, 6 are partial or adapted, 1 is partial only through Draft RSKIP work, 37 are missing, and 1 still needs verifying. Rootstock tracks Ethereum's EVM opcode and precompile additions closely up to Cancun (except blobs), but appears to have skipped the gas-model changes since Berlin (2929, 2930, 3529, 2200, 1884 repricing; several still unverified) and has no typed transactions.
 
 ## Homestead
 
@@ -169,7 +169,7 @@ Meta: [EIP-7568](https://eips.ethereum.org/EIPS/eip-7568).
 |---|---|---|---|---|---|---|
 | [3651](https://eips.ethereum.org/EIPS/eip-3651) | Warm COINBASE | **No** |  |  | Nothing to warm: rskj has no warm/cold access tracking (see 2929). | Won't (needs 2929) |
 | [3855](https://eips.ethereum.org/EIPS/eip-3855) | PUSH0 instruction | **Yes** | Arrowhead | 6,223,700 | PUSH0 via [RSKIP-398](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP398.md) (Arrowhead) ([`VM.java:2064`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/VM.java#L2064)). |  |
-| [3860](https://eips.ethereum.org/EIPS/eip-3860) | Limit and meter initcode | **?** | Lovell | 7,338,024 | **Unverified** (claimed Yes): Initcode limit/metering via [RSKIP-438](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP438.md) (Lovell) (`MAX_INITCODE_SIZE`, [`Constants.java:56`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/config/Constants.java#L56)). |  |
+| [3860](https://eips.ethereum.org/EIPS/eip-3860) | Limit and meter initcode | **Yes** | Lovell | 7,338,024 | All of it via [RSKIP-438](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP438.md) (Lovell): limit 2 x 24576 = 49152 ([`Constants.java:56`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/config/Constants.java#L56)); oversized creation txs invalid ([`Transaction.java:225`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/core/Transaction.java#L225)); oversized CREATE/CREATE2 abort ([`Program.java:617`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/program/Program.java#L617)); 2 gas per 32-byte word ([`GasCost.java:104`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/GasCost.java#L104)) for creation txs ([`Transaction.java:212`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/core/Transaction.java#L212)), CREATE ([`VM.java:1549`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/VM.java#L1549)) and CREATE2 ([`VM.java:1584`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/VM.java#L1584)). |  |
 | [4895](https://eips.ethereum.org/EIPS/eip-4895) | Beacon chain push withdrawals as operations | **N/A** |  |  | Ethereum consensus layer / beacon chain; no Rootstock equivalent. |  |
 | [6049](https://eips.ethereum.org/EIPS/eip-6049) | Deprecate SELFDESTRUCT | **N/A** |  |  | Deprecation notice only; no consensus change. |  |
 
@@ -210,7 +210,7 @@ Meta: [EIP-7607](https://eips.ethereum.org/EIPS/eip-7607).
 | EIP | Title | RSK | RSK upgrade | Mainnet height | Evidence | Under assumptions |
 |---|---|---|---|---|---|---|
 | [7594](https://eips.ethereum.org/EIPS/eip-7594) | PeerDAS - Peer Data Availability Sampling | **No** |  |  | Blob-specific; Rootstock has no blobs ([RSKIP-558](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP558.md) Draft). |  |
-| [7823](https://eips.ethereum.org/EIPS/eip-7823) | Set upper bounds for MODEXP | **?** |  |  | **Unverified** (claimed No): No RSKIP; MODEXP input bounds unchanged. |  |
+| [7823](https://eips.ethereum.org/EIPS/eip-7823) | Set upper bounds for MODEXP | **No** |  |  | No RSKIP; MODEXP parses base/exponent/modulus lengths with no 1024-byte bound ([`PrecompiledContracts.java:470`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/PrecompiledContracts.java#L470)). |  |
 | [7825](https://eips.ethereum.org/EIPS/eip-7825) | Transaction Gas Limit Cap | **No** |  |  | No consensus per-tx cap: execution only checks the tx against the remaining block gas ([`TransactionExecutor.java:265`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/core/TransactionExecutor.java#L265)). The 2^60 cap is pool-only ([`TxValidatorGasLimitValidator.java:40`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/co/rsk/net/handler/txvalidator/TxValidatorGasLimitValidator.java#L40)); 7825's cap is 2^24. [RSKIP-144](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP144.md) sublist limits (Reed 8.1.0, not scheduled on mainnet) are a different rule. |  |
 | [7883](https://eips.ethereum.org/EIPS/eip-7883) | ModExp Gas Cost Increase | **No** |  |  | No RSKIP; MODEXP keeps EIP-198 pricing. |  |
 | [7917](https://eips.ethereum.org/EIPS/eip-7917) | Deterministic proposer lookahead | **N/A** |  |  | Ethereum consensus layer / beacon chain; no Rootstock equivalent. |  |
@@ -265,7 +265,7 @@ Rules Ethereum applies from genesis, not tied to one upgrade.
 | Papyrus | 2,392,700 | 196, 197, 1108, 1344, 1884 |
 | Iris | 3,614,800 | 152, 211, 1052 |
 | Arrowhead | 6,223,700 | 2028, 3198, 3855 |
-| Lovell | 7,338,024 | 2, 1153, 3860?, 5656 |
+| Lovell | 7,338,024 | 2, 1153, 3860, 5656 |
 | Vetiver | 8,804,200 | 3541 |
 
 `?` after an EIP = claimed, not yet verified.

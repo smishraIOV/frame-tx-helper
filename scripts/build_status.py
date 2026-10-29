@@ -153,7 +153,11 @@ R = {
     # Shanghai
     3651: ("No", "", "Nothing to warm: rskj has no warm/cold access tracking (see 2929).", "Won't (needs 2929)"),
     3855: ("Yes", "Arrowhead", f"PUSH0 via {rskip(398, 'Arrowhead')} ({code('org/ethereum/vm/VM.java', 2064)})."),
-    3860: ("Yes", "Lovell", f"Initcode limit/metering via {rskip(438, 'Lovell')} (`MAX_INITCODE_SIZE`, {code('org/ethereum/config/Constants.java', 56)})."),
+    3860: ("Yes", "Lovell", f"All of it via {rskip(438, 'Lovell')}: limit 2 x 24576 = 49152 ({code('org/ethereum/config/Constants.java', 56)}); "
+           f"oversized creation txs invalid ({code('org/ethereum/core/Transaction.java', 225)}); oversized CREATE/CREATE2 abort "
+           f"({code('org/ethereum/vm/program/Program.java', 617)}); 2 gas per 32-byte word ({code('org/ethereum/vm/GasCost.java', 104)}) "
+           f"for creation txs ({code('org/ethereum/core/Transaction.java', 212)}), CREATE ({code('org/ethereum/vm/VM.java', 1549)}) "
+           f"and CREATE2 ({code('org/ethereum/vm/VM.java', 1584)})."),
     4895: BEACON,
     6049: (N_A, "", "Deprecation notice only; no consensus change."),
     # Cancun
@@ -177,7 +181,8 @@ R = {
     7702: ("No", "", f"{rskip(545)} Draft ([PR #710]({PR_URL.format(710)})).", "Assumed active"),
     # Osaka
     7594: BLOBS,
-    7823: ("No", "", "No RSKIP; MODEXP input bounds unchanged."),
+    7823: ("No", "", f"No RSKIP; MODEXP parses base/exponent/modulus lengths with no 1024-byte bound "
+           f"({code('org/ethereum/vm/PrecompiledContracts.java', 470)})."),
     7825: ("No", "", f"No consensus per-tx cap: execution only checks the tx against the remaining block gas ({code('org/ethereum/core/TransactionExecutor.java', 265)}). "
            f"The 2^60 cap is pool-only ({code('co/rsk/net/handler/txvalidator/TxValidatorGasLimitValidator.java', 40)}); 7825's cap is 2^24. "
            f"{rskip(144)} sublist limits (Reed 8.1.0, not scheduled on mainnet) are a different rule."),
@@ -209,7 +214,7 @@ for n in (2780, 7708, 7778, 7928, 7954, 7976, 7981, 7997, 8037, 8038, 8246):
 
 
 # Rows whose evidence was taken on trust (a brief citation, not a rule-by-rule check): shown as "?" until validated.
-UNVERIFIED = {3860, 7823}
+UNVERIFIED = set()
 CLAIMED = {}
 for n in UNVERIFIED:
     st, up, ev, *rest = R[n]
