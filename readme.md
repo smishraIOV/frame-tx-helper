@@ -27,3 +27,8 @@ Working assumptions for scoping. The per-EIP effect is in the "Under assumptions
     - `python3.15 -I scripts/build_status.py <EIPs> rsk-eip-status.md`
     - `build_deps.py` overwrites the whole file, including the review notes under Observations. Those notes are hard-coded in the script, so add any new note to the script too, or edit the generated file by hand.
 
+## Next steps
+1. Validate the findings from Task 2 in rsk-eip-status.md
+2. Classify EIPs dependenies as hard or soft pre-requisite.
+    - e.g. EIPs related to changes in calldata cost are not hard blockers.
+    - but dependencies related to post quantum approaches will be hard ones 
