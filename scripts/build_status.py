@@ -80,7 +80,7 @@ R = {
     # Tangerine Whistle
     150: ("Partial", "Genesis", f"Gas repricing matches: CALL 700, BALANCE 400, EXTCODESIZE/COPY 700, SLOAD 200, SELFDESTRUCT 5000 "
           f"({code('org/ethereum/vm/GasCost.java', 52)}). **Divergence:** no 63/64 rule; the callee gets min(remaining, requested) gas, so a call can forward all "
-          f"remaining gas ({code('org/ethereum/vm/VM.java', 1659)}); CREATE also passes all remaining gas ({code('org/ethereum/vm/VM.java', 1468)}). `getCallStackDepth` added by {rskip(203, 'Arrowhead')}."),
+          f"remaining gas ({code('org/ethereum/vm/VM.java', 1659)}); CREATE also passes all remaining gas ({code('org/ethereum/vm/program/Program.java', 523)}). `getCallStackDepth` added by {rskip(203, 'Arrowhead')}."),
     # Spurious Dragon
     155: ("Yes", "Genesis", f"Signing payload is rlp(..., chainId, 0, 0) ({code('org/ethereum/core/Transaction.java', 468)}); "
           f"v = chainId*2 + 35 + recId ({code('org/ethereum/core/Transaction.java', 445)}); txs accepted with chain ID 0 or the network's "
