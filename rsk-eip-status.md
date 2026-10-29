@@ -10,7 +10,7 @@ Task 2 in `readme.md`: every Core EIP in each Ethereum hard fork, its Rootstock 
 |---|---|---|---|---|---|---|---|
 | Homestead | 2 | 2 |  |  |  |  |  |
 | Tangerine Whistle | 1 | 1 |  |  |  |  |  |
-| Spurious Dragon | 4 | 3 |  |  | 1 |  |  |
+| Spurious Dragon | 4 | 3 | 1 |  |  |  |  |
 | Byzantium | 9 | 7 |  | 1 |  | 1 |  |
 | Constantinople | 5 | 3 |  |  |  | 2 |  |
 | Istanbul | 6 | 4 | 1 |  | 1 |  |  |
@@ -26,9 +26,9 @@ Task 2 in `readme.md`: every Core EIP in each Ethereum hard fork, its Rootstock 
 | Osaka (Fusaka) | 9 |  |  |  | 8 | 1 |  |
 | Amsterdam (Glamsterdam, scheduled) | 18 |  |  |  | 12 | 6 |  |
 | Retroactive | 3 | 1 |  |  | 1 |  | 1 |
-| **Total** | **92** | **27** | **2** | **1** | **37** | **24** | **1** |
+| **Total** | **92** | **27** | **3** | **1** | **36** | **24** | **1** |
 
-Of the 68 EIPs that apply to Rootstock, 27 are fully active, 3 are partial or adapted, 37 are missing, and 1 still needs verifying. Rootstock tracks Ethereum's EVM opcode and precompile additions closely up to Cancun (except blobs), but skipped every gas-model change since Berlin (2929, 2930, 3529, 2200, 1884 repricing) and has no typed transactions.
+Of the 68 EIPs that apply to Rootstock, 27 are fully active, 4 are partial or adapted, 36 are missing, and 1 still needs verifying. Rootstock tracks Ethereum's EVM opcode and precompile additions closely up to Cancun (except blobs), but skipped every gas-model change since Berlin (2929, 2930, 3529, 2200, 1884 repricing) and has no typed transactions.
 
 ## Homestead
 
@@ -55,7 +55,7 @@ Meta: [EIP-607](https://eips.ethereum.org/EIPS/eip-607).
 |---|---|---|---|---|---|---|
 | [155](https://eips.ethereum.org/EIPS/eip-155) | Simple replay attack protection | **Yes** | Genesis | 0 | Chain ID in `v` [`Transaction.java:73`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/core/Transaction.java#L73); mainnet chain ID 30. |  |
 | [160](https://eips.ethereum.org/EIPS/eip-160) | EXP cost increase | **Yes** | Genesis | 0 | `EXP_BYTE_GAS = 50` [`GasCost.java:90`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/GasCost.java#L90). |  |
-| [161](https://eips.ethereum.org/EIPS/eip-161) | State trie clearing (invariant-preserving alternative) | **No** |  |  | No touched-empty-account deletion seen in [`TransactionExecutor.java`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/core/TransactionExecutor.java) (light check). |  |
+| [161](https://eips.ethereum.org/EIPS/eip-161) | State trie clearing (invariant-preserving alternative) | **Partial** | Wasabi | 1,591,000 | Only rule (a), and only for CREATE/CREATE2: new contracts start at nonce 1 via [RSKIP-125](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP125.md) (Wasabi) ([`Program.java:592`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/program/Program.java#L592)); contract-creation txs still start at 0 ([`TransactionExecutor.java:403`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/core/TransactionExecutor.java#L403)). (b) 25000 new-account gas is charged even for zero value ([`VM.java:1734`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/VM.java#L1734), [`VM.java:1797`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/VM.java#L1797)). (c) A zero-value transfer creates an empty account ([`MutableRepository.java:322`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/db/MutableRepository.java#L322)). (d) No end-of-tx deletion of touched empty accounts; only SUICIDE deletions ([`TransactionExecutor.java:622`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/core/TransactionExecutor.java#L622)). |  |
 | [170](https://eips.ethereum.org/EIPS/eip-170) | Contract code size limit | **Yes** | Genesis | 0 | `MAX_CONTRACT_SIZE = 0x6000` [`Constants.java:55`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/config/Constants.java#L55), enforced in [`TransactionExecutor.java:529`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/core/TransactionExecutor.java#L529). |  |
 
 ## Byzantium
@@ -269,7 +269,7 @@ Not part of an Ethereum hard fork, listed so the RSKIP → EIP mapping is comple
 |---|---|---|
 | Genesis | 0 | 7, 100, 140, 150, 155, 160, 170, 198, 211, 658, 684 |
 | Orchid | 729,000 | 214 |
-| Wasabi | 1,591,000 | 145, 1014 |
+| Wasabi | 1,591,000 | 145, 161, 1014 |
 | Papyrus | 2,392,700 | 196, 197, 1052, 1108, 1344, 1884 |
 | Iris | 3,614,800 | 152 |
 | Arrowhead | 6,223,700 | 1559, 2028, 3198, 3855 |

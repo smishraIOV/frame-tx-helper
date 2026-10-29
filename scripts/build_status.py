@@ -82,7 +82,11 @@ R = {
     # Spurious Dragon
     155: ("Yes", "Genesis", f"Chain ID in `v` {code('org/ethereum/core/Transaction.java', 73)}; mainnet chain ID 30."),
     160: ("Yes", "Genesis", f"`EXP_BYTE_GAS = 50` {code('org/ethereum/vm/GasCost.java', 90)}."),
-    161: ("No", "", f"No touched-empty-account deletion seen in {code('org/ethereum/core/TransactionExecutor.java')} (light check)."),
+    161: ("Partial", "Wasabi", f"Only rule (a), and only for CREATE/CREATE2: new contracts start at nonce 1 via {rskip(125, 'Wasabi')} "
+          f"({code('org/ethereum/vm/program/Program.java', 592)}); contract-creation txs still start at 0 ({code('org/ethereum/core/TransactionExecutor.java', 403)}). "
+          f"(b) 25000 new-account gas is charged even for zero value ({code('org/ethereum/vm/VM.java', 1734)}, {code('org/ethereum/vm/VM.java', 1797)}). "
+          f"(c) A zero-value transfer creates an empty account ({code('org/ethereum/db/MutableRepository.java', 322)}). "
+          f"(d) No end-of-tx deletion of touched empty accounts; only SUICIDE deletions ({code('org/ethereum/core/TransactionExecutor.java', 622)})."),
     170: ("Yes", "Genesis", f"`MAX_CONTRACT_SIZE = 0x6000` {code('org/ethereum/config/Constants.java', 55)}, enforced in {code('org/ethereum/core/TransactionExecutor.java', 529)}."),
     # Byzantium
     100: ("Adapted", "Genesis", f"Rootstock uses its own uncle-aware difficulty formula ({code('co/rsk/core/DifficultyCalculator.java', 77)}), not EIP-100's."),

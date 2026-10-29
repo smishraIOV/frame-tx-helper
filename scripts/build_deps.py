@@ -28,7 +28,7 @@ FORK = {
 RSK = {
     8141: ("No", "No RSKIP."),
     2: ("Yes", "Complete since Lovell. (1) 53000 gas for contract-creation txs and (2) low-s signatures (`Transaction.java:321`) from genesis; (3) failed code deposit leaves no empty contract: top-level creates from genesis (`TransactionExecutor` rollback), internal CREATE/CREATE2 only since RSKIP-453 (Lovell, block 7,338,024; `Program.java:738`). (4) Difficulty formula: N/A, RSK uses its own."),
-    161: ("No", "No touched-empty-account deletion seen in `TransactionExecutor.java` (light check; see `rsk-eip-status.md`)."),
+    161: ("Partial", "Only rule (a), and only for CREATE/CREATE2: new contracts start at nonce 1 since RSKIP-125 (Wasabi; `Program.java:592`); contract-creation txs still start at 0 (`TransactionExecutor.java:403`). (b) 25000 new-account gas is charged even for zero value (`VM.java:1734`, `:1797`). (c) A zero-value transfer creates an empty account (`MutableRepository.java:322`). (d) No end-of-tx deletion of touched empty accounts; only SUICIDE deletions (`TransactionExecutor.java:622`)."),
     684: ("Yes", "`Program.java:547` `addressCollisionException`."),
     2681: ("Partial", "Mempool only: `TxValidatorNonceEncodingValidator.java` rejects nonces over 8 bytes (≤ 2^64-1). No consensus rule or RSKIP; no overflow check on increment."),
     1052: ("Yes", "RSKIP-140 (Papyrus), fixed by RSKIP-169 (Iris)."),
@@ -222,13 +222,13 @@ w("  * @claude: For this project, treat all storage rent related RSKIPs as rejec
 w("  * @claude: for the present, assume that gas price difference from eip-2929 will not be implemented on Rootstock. We will define 8141 gas without it - with our own rationale.")
 w("  * → Applied as assumptions 2 and 3. 2929 and 3651 become Won't, and 8038 becomes Replace. "
   "Still open: 3529 (refund reduction), 2200, and the newer gas EIPs 2780, 7778, 7623, 7976 and 8037. These are 2929-independent and need individual decisions as part of the RSK 8141 gas rationale. "
-  "EIP-161 (required by 7702 and 8037) is not active and needs a decision like the gas EIPs above.")
+  "EIP-161 (required by 7702 and 8037) is only partly active: new contracts start at nonce 1, but none of the empty-account rules apply, so zero-value calls still create accounts. That matters for 8037's state-creation charging, and it needs a decision like the gas EIPs above.")
 w("- **Blob dependencies.** 4844 and 7594 are in `requires` mainly for BLOBHASH and the blob-wrapper format. Rootstock has no blobs (RSKIP-558 is Draft). We need to establish whether 8141 can work on RSK without them, for example with zero blobs per frame tx.")
 w("  * @claude: blobs are not critical to frame transactions. For this project we can assume that if needed, eip-4844 can be activated on Rootstock (RSKIP-558)")
 w("  * → Applied as assumption 4: 4844 is If needed, 7594 is Not needed.")
 w("- **Beacon-chain items (4788, 4895, 7843 SLOTNUM)** don't map to Rootstock and need an RSK-specific substitute or exclusion.")
 w("- **Moving targets.** 8141 is Draft, and 2780, 7708, 7778, 7843, 7928, 7976, 7997, 8037, 8038 and 8246 are Last Call. Most are scheduled for Glamsterdam, so their specs may still change.")
-w("- **Still to verify:** 7997, marked `?` above. Resolved: 3607 (not adopted, not needed per RSKIP-545) and 161 (not active, light check in Task 2).")
+w("- **Still to verify:** 7997, marked `?` above. Resolved: 3607 (not adopted, not needed per RSKIP-545) and 161 (Partial: nonce rule only, checked rule by rule).")
 
 out_path.write_text("\n".join(out) + "\n", encoding="utf-8")
 print("hard:", sorted(hard))
