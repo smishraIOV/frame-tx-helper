@@ -120,7 +120,7 @@ Meta: [EIP-7568](https://eips.ethereum.org/EIPS/eip-7568).
 | [2565](https://eips.ethereum.org/EIPS/eip-2565) | ModExp Gas Cost | **No** |  |  | MODEXP keeps EIP-198 pricing (`GQUAD_DIVISOR = 20`). |  |
 | [2718](https://eips.ethereum.org/EIPS/eip-2718) | Typed Transaction Envelope | **No** |  |  | No typed txs in rskj. [RSKIP-543](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP543.md) Draft ([PR #708](https://github.com/rsksmart/RSKIPs/pull/708)). | Assumed active |
 | [2929](https://eips.ethereum.org/EIPS/eip-2929) | Gas cost increases for state access opcodes | **No** |  |  | Not adopted; see [RSKIP-239](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP239.md) (Reprice Trie Read Opcodes). | Won't (project decision) |
-| [2930](https://eips.ethereum.org/EIPS/eip-2930) | Optional access lists | **No** |  |  | [RSKIP-546](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP546.md) Draft ([PR #709](https://github.com/rsksmart/RSKIPs/pull/709)): encoding plus access-list gas only. | Partial: encoding only |
+| [2930](https://eips.ethereum.org/EIPS/eip-2930) | Optional access lists | **No** |  |  | No access-list code in rskj. [RSKIP-546](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP546.md) Draft ([PR #709](https://github.com/rsksmart/RSKIPs/pull/709)): encoding plus access-list gas only. | Partial: encoding only |
 
 ## London
 
@@ -128,8 +128,8 @@ Meta: [EIP-7568](https://eips.ethereum.org/EIPS/eip-7568).
 
 | EIP | Title | RSK | RSK upgrade | Mainnet height | Evidence | Under assumptions |
 |---|---|---|---|---|---|---|
-| [1559](https://eips.ethereum.org/EIPS/eip-1559) | Fee market change for ETH 1.0 chain | **Partial** | Arrowhead | 6,223,700 | Only BASEFEE (EIP-3198). No fee market; Type-2 encoding in [RSKIP-546](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP546.md) Draft, with base fee effectively zero. | Partial: Type-2 encoding, zero base fee |
-| [3198](https://eips.ethereum.org/EIPS/eip-3198) | BASEFEE opcode | **Yes** | Arrowhead | 6,223,700 | BASEFEE via [RSKIP-412](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP412.md) (Arrowhead) ([`VM.java:1950`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/VM.java#L1950)). |  |
+| [1559](https://eips.ethereum.org/EIPS/eip-1559) | Fee market change for ETH 1.0 chain | **Partial** | Genesis | 0 | No 1559 fee market or Type-2 tx. Closest analogue since genesis: a consensus-enforced block floor, header `minimumGasPrice` ([`BlockHeader.java:127`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/core/BlockHeader.java#L127)). Every tx must pay at least it ([`TxsMinGasPriceRule`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/co/rsk/validators/TxsMinGasPriceRule.java#L33)), and it can only move a bounded step from the parent ([`PrevMinGasPriceRule`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/co/rsk/validators/PrevMinGasPriceRule.java#L31)). It's miner-voted, not burnt, with no gas-target elasticity. BASEFEE (EIP-3198) returns it ([`VM.java:1101`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/VM.java#L1101)). Type-2 encoding in [RSKIP-546](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP546.md) Draft. | Partial: Type-2 encoding, zero base fee |
+| [3198](https://eips.ethereum.org/EIPS/eip-3198) | BASEFEE opcode | **Yes** | Arrowhead | 6,223,700 | BASEFEE via [RSKIP-412](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP412.md) (Arrowhead) ([`VM.java:1950`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/VM.java#L1950)); returns the block's `minimumGasPrice` ([`VM.java:1101`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/VM.java#L1101)). |  |
 | [3529](https://eips.ethereum.org/EIPS/eip-3529) | Reduction in refunds | **No** |  |  | Pre-London refunds ([`GasCost.java:61`](https://github.com/rsksmart/rskj/blob/1e95a3b03/rskj-core/src/main/java/org/ethereum/vm/GasCost.java#L61): REFUND_SSTORE 15000, SUICIDE_REFUND 24000). |  |
 | [3541](https://eips.ethereum.org/EIPS/eip-3541) | Reject new contract code starting with the 0xEF byte | **Yes** | Vetiver | 8,804,200 | [RSKIP-544](https://github.com/rsksmart/RSKIPs/blob/master/IPs/RSKIP544.md) (Vetiver). |  |
 | [3554](https://eips.ethereum.org/EIPS/eip-3554) | Difficulty Bomb Delay to December 2021 | **N/A** |  |  | Ethereum difficulty-bomb schedule; Rootstock has no difficulty bomb. |  |
@@ -268,12 +268,12 @@ Not part of an Ethereum hard fork, listed so the RSKIP → EIP mapping is comple
 
 | RSK upgrade | Mainnet height | EIPs |
 |---|---|---|
-| Genesis | 0 | 7, 100, 140, 150, 155, 160, 170, 198, 211, 658, 684 |
+| Genesis | 0 | 7, 100, 140, 150, 155, 160, 170, 198, 211, 658, 684, 1559 |
 | Orchid | 729,000 | 214 |
 | Wasabi | 1,591,000 | 145, 161, 1014 |
 | Papyrus | 2,392,700 | 196, 197, 1052, 1108, 1344, 1884 |
 | Iris | 3,614,800 | 152 |
-| Arrowhead | 6,223,700 | 1559, 2028, 3198, 3855 |
+| Arrowhead | 6,223,700 | 2028, 3198, 3855 |
 | Lovell | 7,338,024 | 2, 1153, 3860, 5656 |
 | Vetiver | 8,804,200 | 3541 |
 
